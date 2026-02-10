@@ -6,7 +6,7 @@ import { analyza } from "../src/parser/parser"
 async function curre(fons: string): Promise<string[]> {
   const lineae: string[] = []
   const scaena: Scaena = { proclama: (l) => lineae.push(l), susurra: () => {} }
-  await new Aestimator(scaena).curre(analyza(fons))
+  await new Aestimator({ scaena }).curre(analyza(fons))
   return lineae
 }
 
@@ -141,7 +141,7 @@ describe("believe and attempt", () => {
 
 describe("type mismatch", () => {
   it("mints an oracle value instead of NaN on bad arithmetic", async () => {
-    const out = await curre('proclaim 5 * "peixe"')
+    const out = await curre('certain { proclaim 5 * "peixe" }')
     expect(out[0]).toContain("oracle")
   })
 })

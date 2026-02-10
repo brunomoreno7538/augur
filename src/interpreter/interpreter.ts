@@ -1,6 +1,9 @@
-import { AugurErratum, ErratumExsecutionis, ErratumOraculi } from "../errors"
-import type { Expressio, Programma, Sententia } from "../parser/ast"
+import { AugurErratum, ErratumAerarii, ErratumExsecutionis, ErratumOraculi } from "../errors"
+import type { Expressio, OperatorBinarius, Programma, Sententia } from "../parser/ast"
+import { OraculumFictum } from "../providers/fake"
+import type { Oraculum, Rogatio, SummariumOperandi, ValorCrudus } from "../providers/types"
 import { Ambitus } from "./environment"
+import { PilaZonarum, temperaturaPro, type Zona } from "./zones"
 import {
   creaAgmen,
   creaNumerus,
@@ -13,6 +16,7 @@ import {
   NIHIL,
   operatioBinariaNativa,
   operatioUnariaNativa,
+  praevisio,
   repraesenta,
   type Valor,
   type ValorRitus,
@@ -44,8 +48,24 @@ const scaenaConsolae: Scaena = {
   susurra: (linea) => console.error(linea),
 }
 
+export interface OptionesAestimatoris {
+  scaena?: Scaena
+  oraculum?: Oraculum
+  temperaturaDivina?: number
+}
+
 export class Aestimator {
-  constructor(private readonly scaena: Scaena = scaenaConsolae) {}
+  private readonly scaena: Scaena
+  private readonly oraculum: Oraculum
+  private readonly temperaturaDivina: number
+  private readonly pila = new PilaZonarum()
+  private contextusCurrens: string[] = []
+
+  constructor(optiones: OptionesAestimatoris = {}) {
+    this.scaena = optiones.scaena ?? scaenaConsolae
+    this.oraculum = optiones.oraculum ?? new OraculumFictum()
+    this.temperaturaDivina = optiones.temperaturaDivina ?? 0.7
+  }
 
   async curre(programma: Programma, ambitus: Ambitus = new Ambitus()): Promise<void> {
     for (const s of programma) {
@@ -54,6 +74,16 @@ export class Aestimator {
   }
 
   private async exsequere(s: Sententia, amb: Ambitus): Promise<void> {
+    const prior = this.contextusCurrens
+    if (s.contextus) this.contextusCurrens = s.contextus
+    try {
+      return await this.exsequereNudum(s, amb)
+    } finally {
+      this.contextusCurrens = prior
+    }
+  }
+
+  private async exsequereNudum(s: Sententia, amb: Ambitus): Promise<void> {
     switch (s.genus) {
       case "DeclaratioVar":
         amb.declara(s.nomen, await this.aestima(s.valor, amb))
@@ -95,7 +125,7 @@ export class Aestimator {
       case "Conatus":
         return await this.exsequereConatum(s, amb)
       case "BlocusZonae":
-        return await this.execCorpus(s.corpus, amb.filius())
+        return await this.exsequereBlocumZonae(s, amb)
       case "Praeceptum":
         return
       case "Proclamatio":
@@ -122,12 +152,28 @@ export class Aestimator {
     }
   }
 
+  private async exsequereBlocumZonae(
+    s: Extract<Sententia, { genus: "BlocusZonae" }>,
+    amb: Ambitus,
+  ): Promise<void> {
+    const zona: Zona =
+      s.zonaGenus === "Certus" ? { genus: "Certus" } : { genus: "Chaos", temperatura: s.temperatura }
+    this.pila.impone(zona)
+    try {
+      return await this.execCorpus(s.corpus, amb.filius())
+    } finally {
+      this.pila.detrahe()
+    }
+  }
+
   private async exsequereConditionem(
     s: Extract<Sententia, { genus: "Conditio" }>,
     amb: Ambitus,
   ): Promise<void> {
     for (const ramus of s.rami) {
-      if (estVerum(await this.aestima(ramus.condicio, amb))) {
+      const condicio = await this.aestima(ramus.condicio, amb)
+      if (estOraculum(condicio)) this.scaena.susurra("condition divined to an oracle; treating as false")
+      if (estVerum(condicio)) {
         return await this.execCorpus(ramus.corpus, amb.filius())
       }
     }
@@ -140,7 +186,10 @@ export class Aestimator {
     s: Extract<Sententia, { genus: "DumIteratio" }>,
     amb: Ambitus,
   ): Promise<void> {
-    while (estVerum(await this.aestima(s.condicio, amb))) {
+    for (;;) {
+      const condicio = await this.aestima(s.condicio, amb)
+      if (estOraculum(condicio)) this.scaena.susurra("loop condition divined to an oracle; stopping")
+      if (!estVerum(condicio)) break
       try {
         await this.execCorpus(s.corpus, amb.filius())
       } catch (e) {
@@ -219,7 +268,7 @@ export class Aestimator {
     try {
       await this.execCorpus(s.corpus, amb.filius())
     } catch (e) {
-      if (estSignumDirectionis(e)) throw e
+      if (estSignumDirectionis(e) || e instanceof ErratumAerarii) throw e
       const local = amb.filius()
       if (s.nomenErroris) {
         const nuntius = e instanceof AugurErratum ? e.message : String(e)
@@ -254,7 +303,10 @@ export class Aestimator {
       case "ExpressioBinaria": {
         const a = await this.aestima(e.sinistra, amb)
         const b = await this.aestima(e.dextra, amb)
-        return operatioBinariaNativa(e.operator, a, b)
+        if (estOraculum(a)) return a
+        if (estOraculum(b)) return b
+        if (this.pila.apex().genus === "Certus") return operatioBinariaNativa(e.operator, a, b)
+        return await this.divinaBinariam(e.operator, a, b)
       }
       case "ExpressioLogica": {
         const sinistra = await this.aestima(e.sinistra, amb)
@@ -272,6 +324,7 @@ export class Aestimator {
       case "Indicium":
         return await this.aestimaIndicium(e, amb)
       case "Divinatio":
+        return await this.aestimaDivinationem(e, amb)
       case "Petitio":
       case "Interrogatio":
       case "Consultatio":
@@ -280,6 +333,43 @@ export class Aestimator {
       case "OperatioCollectionis":
         throw new ErratumExsecutionis(`'${e.genus}' not yet implemented`)
     }
+  }
+
+  private async divinaBinariam(op: OperatorBinarius, a: Valor, b: Valor): Promise<Valor> {
+    const zona = this.pila.apex()
+    const rogatio: Rogatio = {
+      genusOperationis: op,
+      operandi: [summa(a), summa(b)],
+      temperatura: temperaturaPro(zona, this.temperaturaDivina),
+      genusExpectatum: genusExpectatumOperatoris(op),
+      contextus: this.contextusCurrens,
+    }
+    const responsum = await this.oraculum.divina(rogatio)
+    if (!responsum.ratum) return fingeOraculum(responsum.causa)
+    return coerce(responsum.valor)
+  }
+
+  private async aestimaDivinationem(
+    e: Extract<Expressio, { genus: "Divinatio" }>,
+    amb: Ambitus,
+  ): Promise<Valor> {
+    const operandi: SummariumOperandi[] = []
+    if (e.supra) {
+      const sup = await this.aestima(e.supra, amb)
+      if (estOraculum(sup)) return sup
+      operandi.push(summa(sup))
+    }
+    const zona = this.pila.apex()
+    const rogatio: Rogatio = {
+      genusOperationis: "divine",
+      operandi,
+      instructio: e.instructio,
+      temperatura: temperaturaPro(zona, this.temperaturaDivina),
+      contextus: this.contextusCurrens,
+    }
+    const responsum = await this.oraculum.divina(rogatio)
+    if (!responsum.ratum) return fingeOraculum(responsum.causa)
+    return coerce(responsum.valor)
   }
 
   private async aestimaVocationem(
@@ -329,4 +419,32 @@ export class Aestimator {
     }
     throw new ErratumExsecutionis(`cannot index ${basis.genus} with ${index.genus}`)
   }
+}
+
+function summa(v: Valor): SummariumOperandi {
+  return { genus: v.genus, praevisio: praevisio(v) }
+}
+
+function genusExpectatumOperatoris(op: OperatorBinarius): string | undefined {
+  switch (op) {
+    case "==":
+    case "!=":
+    case "<":
+    case ">":
+    case "<=":
+    case ">=":
+      return "veritas"
+    default:
+      return undefined
+  }
+}
+
+function coerce(c: ValorCrudus): Valor {
+  if (typeof c === "number") return creaNumerus(c)
+  if (typeof c === "boolean") return creaVeritas(c)
+  if (typeof c === "string") return creaTextus(c)
+  if (Array.isArray(c)) return creaAgmen(c.map(coerce))
+  const tabula = new Map<string, Valor>()
+  for (const [clavis, valor] of Object.entries(c)) tabula.set(clavis, coerce(valor))
+  return creaTabula(tabula)
 }
