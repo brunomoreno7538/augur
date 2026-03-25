@@ -29,6 +29,8 @@ export function exemplarPraedefinitum(oraculum: string): string {
       return "claude-haiku-4-5"
     case "openai":
       return "gpt-4o-mini"
+    case "openrouter":
+      return "openai/gpt-4o-mini"
     case "ollama":
       return "llama3.1"
     default:

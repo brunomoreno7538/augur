@@ -18,7 +18,7 @@ export function legeMandata(argv: string[]): OptionesMandati {
     .argument("[file]", "path to a .aug program")
     .option("--seance", "interactive REPL", false)
     .option("--paranoid", "log every AI call (prompt + response + cost)", false)
-    .option("--oracle <name>", "anthropic | openai | ollama | fake")
+    .option("--oracle <name>", "anthropic | openai | openrouter | ollama | fake")
     .option("--model <id>", "model id")
     .option("--temperature <n>", "default temperature", legeFractionem)
     .option("--budget <n>", "AI call ceiling", legeInteger)

@@ -2,13 +2,21 @@ import OpenAI from "openai"
 import { construePrompt, INSTRUCTIO_SYSTEMATIS, restringeTemperaturam } from "./prompt"
 import type { Oraculum, Responsum, Rogatio, ValorCrudus } from "./types"
 
+export interface OptionesClavisOpenAI {
+  baseURL?: string
+  apiKey?: string
+}
+
 export class OraculumOpenAI implements Oraculum {
-  private readonly clavis = new OpenAI()
+  private readonly clavis: OpenAI
 
   constructor(
     private readonly exemplar: string,
     private readonly maxSigna = 1024,
-  ) {}
+    clavisOptiones: OptionesClavisOpenAI = {},
+  ) {
+    this.clavis = new OpenAI(clavisOptiones)
+  }
 
   async divina(rogatio: Rogatio): Promise<Responsum> {
     try {

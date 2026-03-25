@@ -26,6 +26,11 @@ function creaFundamentum(config: Configuratio): Oraculum {
       return new OraculumAnthropicum(config.exemplar)
     case "openai":
       return new OraculumOpenAI(config.exemplar)
+    case "openrouter":
+      return new OraculumOpenAI(config.exemplar, 1024, {
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      })
     case "ollama":
       return new OraculumOllama(config.exemplar)
     default:

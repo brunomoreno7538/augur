@@ -58,8 +58,11 @@ Flags override the `.aug` config header. Default oracle is `fake` (deterministic
 |---|---|---|
 | `anthropic` | `claude-haiku-4-5` | `ANTHROPIC_API_KEY` |
 | `openai` | `gpt-4o-mini` | `OPENAI_API_KEY` |
+| `openrouter` | `openai/gpt-4o-mini` | `OPENROUTER_API_KEY` |
 | `ollama` | `llama3.1` | local, `OLLAMA_HOST` (optional) |
 | `fake` | — | none (used by the test suite) |
+
+`openrouter` is OpenAI-compatible (`https://openrouter.ai/api/v1`); use any OpenRouter model id via `--model`, e.g. `--oracle openrouter --model anthropic/claude-3.5-haiku`. The end-of-run BRL counter reads `0` for OpenRouter (billing is tracked on your OpenRouter dashboard).
 
 Keys are read from the environment — never hardcoded. `oracle "ollama"` runs 100% locally.
 
