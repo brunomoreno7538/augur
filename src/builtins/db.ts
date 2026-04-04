@@ -1,24 +1,16 @@
 import { coerce } from "../interpreter/coercio"
 import { temperaturaPro } from "../interpreter/zones"
-import {
-  creaAgmen,
-  creaNumerus,
-  creaTabula,
-  creaTextus,
-  creaVeritas,
-  fingeOraculum,
-  NIHIL,
-  repraesenta,
-  type Valor,
-} from "../interpreter/values"
+import { creaAgmen, creaTabula, fingeOraculum, repraesenta, type Valor } from "../interpreter/values"
 import type { Rogatio } from "../providers/types"
+import { creaMotor, jsonAdValor, type MotorBasis, valorAdJson } from "./db-motores"
 import type { ContextusNativus } from "./types"
 
 export class Bancus {
   private readonly annales: string[] = []
   private approxSigna = 0
   private readonly collectiones = new Set<string>()
-  private sqlite: import("bun:sqlite").Database | null = null
+  private motor: MotorBasis | null = null
+  private ultimaCausa: string | null = null
 
   constructor(
     readonly locus: string,
@@ -41,9 +33,12 @@ export class Bancus {
   async inscribe(ctx: ContextusNativus, datum: Valor, collectio: string): Promise<void> {
     this.collectiones.add(collectio)
     if (ctx.zona.genus === "Certus") {
-      const db = await this.sqliteDb()
-      db.run(`CREATE TABLE IF NOT EXISTS "${collectio}" (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)`)
-      db.run(`INSERT INTO "${collectio}" (data) VALUES (?)`, [JSON.stringify(valorAdJson(datum))])
+      this.ultimaCausa = null
+      try {
+        await this.machina().insere(collectio, valorAdJson(datum))
+      } catch (err) {
+        this.ultimaCausa = err instanceof Error ? err.message : String(err)
+      }
       return
     }
     this.adde(`INSCRIBE into ${collectio}: ${repraesenta(datum)}`)
@@ -80,28 +75,33 @@ export class Bancus {
     return coerce(responsum.valor)
   }
 
-  private async sqliteDb(): Promise<import("bun:sqlite").Database> {
-    if (this.sqlite === null) {
-      const { Database } = await import("bun:sqlite")
-      const semita = this.locus.startsWith("sqlite://") ? this.locus.slice("sqlite://".length) : ":memory:"
-      this.sqlite = new Database(semita === "" ? ":memory:" : semita)
-    }
-    return this.sqlite
+  private machina(): MotorBasis {
+    if (this.motor === null) this.motor = creaMotor(this.locus)
+    return this.motor
   }
 
   private async legeReale(collectio: string): Promise<Valor> {
-    const db = await this.sqliteDb()
-    db.run(`CREATE TABLE IF NOT EXISTS "${collectio}" (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)`)
-    const ordines = db.query(`SELECT data FROM "${collectio}"`).all() as { data: string }[]
-    return creaAgmen(ordines.map((o) => jsonAdValor(JSON.parse(o.data))))
+    if (this.ultimaCausa !== null) return fingeOraculum("ERROR_ORACULI", this.ultimaCausa)
+    try {
+      const ordines = await this.machina().lege(collectio)
+      return creaAgmen(ordines.map(jsonAdValor))
+    } catch (err) {
+      return fingeOraculum("ERROR_ORACULI", err instanceof Error ? err.message : String(err))
+    }
   }
 
   private async interrogaReale(): Promise<Valor> {
-    const tabula = new Map<string, Valor>()
-    for (const collectio of this.collectiones) {
-      tabula.set(collectio, await this.legeReale(collectio))
+    if (this.ultimaCausa !== null) return fingeOraculum("ERROR_ORACULI", this.ultimaCausa)
+    try {
+      const omnia = await this.machina().legeOmnia(this.collectiones)
+      const tabula = new Map<string, Valor>()
+      for (const { collectio, ordines } of omnia) {
+        tabula.set(collectio, creaAgmen(ordines.map(jsonAdValor)))
+      }
+      return creaTabula(tabula)
+    } catch (err) {
+      return fingeOraculum("ERROR_ORACULI", err instanceof Error ? err.message : String(err))
     }
-    return creaTabula(tabula)
   }
 }
 
@@ -109,37 +109,4 @@ function signa(linea: string): number {
   return Math.ceil(linea.length / 4)
 }
 
-function valorAdJson(v: Valor): unknown {
-  switch (v.genus) {
-    case "numerus":
-      return v.numerus
-    case "textus":
-      return v.textus
-    case "veritas":
-      return v.veritas
-    case "nihil":
-      return null
-    case "agmen":
-      return v.elementa.map(valorAdJson)
-    case "tabula":
-      return Object.fromEntries([...v.tabula].map(([k, w]) => [k, valorAdJson(w)]))
-    case "oraculum":
-      return "<oracle>"
-    case "ritus":
-      return `<ritual ${v.nomen}>`
-  }
-}
-
-function jsonAdValor(x: unknown): Valor {
-  if (x === null) return NIHIL
-  if (typeof x === "number") return creaNumerus(x)
-  if (typeof x === "string") return creaTextus(x)
-  if (typeof x === "boolean") return creaVeritas(x)
-  if (Array.isArray(x)) return creaAgmen(x.map(jsonAdValor))
-  if (typeof x === "object") {
-    const tabula = new Map<string, Valor>()
-    for (const [k, v] of Object.entries(x)) tabula.set(k, jsonAdValor(v))
-    return creaTabula(tabula)
-  }
-  return NIHIL
-}
+export { jsonAdValor, valorAdJson }

@@ -76,3 +76,37 @@ describe("certain database (bun:sqlite)", () => {
     expect(await curre(fons, { oraculum: new OraculumFictum() })).toEqual(["2"])
   })
 })
+
+describe("certain database (postgres)", () => {
+  const pgUrl = process.env.AUGUR_PG_URL
+
+  it.skipIf(!pgUrl)("persists rows in a real PostgreSQL engine", async () => {
+    const tabula = `aug_pg_${Date.now()}`
+    const fons = `
+      certain {
+        commune with "${pgUrl}"
+        inscribe {nome: "Ana", saldo: 100} into ${tabula}
+        inscribe {nome: "Beto", saldo: 50} into ${tabula}
+        proclaim count recall "all" from ${tabula}
+      }
+    `
+    expect(await curre(fons, { oraculum: new OraculumFictum() })).toEqual(["2"])
+  })
+})
+
+describe("certain database (mysql)", () => {
+  const mysqlUrl = process.env.AUGUR_MYSQL_URL
+
+  it.skipIf(!mysqlUrl)("persists rows in a real MySQL engine", async () => {
+    const tabula = `aug_mysql_${Date.now()}`
+    const fons = `
+      certain {
+        commune with "${mysqlUrl}"
+        inscribe {nome: "Ana", saldo: 100} into ${tabula}
+        inscribe {nome: "Beto", saldo: 50} into ${tabula}
+        proclaim count recall "all" from ${tabula}
+      }
+    `
+    expect(await curre(fons, { oraculum: new OraculumFictum() })).toEqual(["2"])
+  })
+})
