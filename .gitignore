@@ -1,5 +1,6 @@
 node_modules/
 aug
+.augur-cache.json
 *.db
 *.sqlite
 *.sqlite3

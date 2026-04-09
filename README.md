@@ -48,9 +48,14 @@ aug <file.aug> [options]
   --model <id>          model id
   --temperature <n>     default temperature
   --budget <n>          ceiling on AI calls (kills runaway loops)
+  --remember            cache divinations to disk (reproducible + cheap)
+  --remember-file <p>   cache file path (default .augur-cache.json)
+  --retry <n>           retries on a transient oracle error (default 2)
 ```
 
 Flags override the `.aug` config header. Default oracle is `fake` (deterministic, offline).
+
+**Reproducible & cheap runs.** `--remember` memoizes every divination to `.augur-cache.json`, keyed by the exact request. Re-running the same program replays cached answers — deterministic output, zero new tokens, no budget spent. Perfect for CI, demos, and not getting a surprise bill. Delete the file to re-roll the dice. (Caching is **off** by default — nondeterminism is the whole point.)
 
 ### Providers
 

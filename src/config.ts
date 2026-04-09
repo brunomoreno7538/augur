@@ -6,6 +6,9 @@ export interface Configuratio {
   temperatura: number
   aerarium: number
   spatiumMemoriae: number
+  memor: boolean
+  fasciculusMemoriae: string
+  conatus: number
 }
 
 export interface PartesConfigurationis {
@@ -14,6 +17,9 @@ export interface PartesConfigurationis {
   temperatura?: number
   aerarium?: number
   spatiumMemoriae?: number
+  memor?: boolean
+  fasciculusMemoriae?: string
+  conatus?: number
 }
 
 export const CONFIGURATIO_PRAEDEFINITA = {
@@ -21,6 +27,9 @@ export const CONFIGURATIO_PRAEDEFINITA = {
   temperatura: 0.7,
   aerarium: 1000,
   spatiumMemoriae: 4000,
+  memor: false,
+  fasciculusMemoriae: ".augur-cache.json",
+  conatus: 2,
 } as const
 
 export function exemplarPraedefinitum(oraculum: string): string {
@@ -61,5 +70,9 @@ export function componeConfigurationem(
     temperatura: mandata.temperatura ?? caput.temperatura ?? CONFIGURATIO_PRAEDEFINITA.temperatura,
     aerarium: mandata.aerarium ?? caput.aerarium ?? CONFIGURATIO_PRAEDEFINITA.aerarium,
     spatiumMemoriae: mandata.spatiumMemoriae ?? caput.spatiumMemoriae ?? CONFIGURATIO_PRAEDEFINITA.spatiumMemoriae,
+    memor: mandata.memor ?? caput.memor ?? CONFIGURATIO_PRAEDEFINITA.memor,
+    fasciculusMemoriae:
+      mandata.fasciculusMemoriae ?? caput.fasciculusMemoriae ?? CONFIGURATIO_PRAEDEFINITA.fasciculusMemoriae,
+    conatus: mandata.conatus ?? caput.conatus ?? CONFIGURATIO_PRAEDEFINITA.conatus,
   }
 }

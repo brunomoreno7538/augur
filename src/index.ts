@@ -18,6 +18,9 @@ async function principium(): Promise<void> {
     exemplar: opts.exemplar,
     temperatura: opts.temperatura,
     aerarium: opts.aerarium,
+    memor: opts.memor ? true : undefined,
+    fasciculusMemoriae: opts.fasciculusMemoriae,
+    conatus: opts.conatus,
   }
 
   let programma: Sententia[] | null = null

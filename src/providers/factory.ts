@@ -1,6 +1,7 @@
 import type { Configuratio } from "../config"
 import { OraculumAnthropicum } from "./anthropic"
-import { Aerarium, Diarium } from "./budget"
+import { Aerarium, Diarium, OraculumIterans } from "./budget"
+import { OraculumMemor } from "./cache"
 import { OraculumFictum } from "./fake"
 import { OraculumOllama } from "./ollama"
 import { OraculumOpenAI } from "./openai"
@@ -15,9 +16,11 @@ export function creaOraculum(
   optiones: OptionesCreandi = {},
 ): { oraculum: Oraculum; aerarium: Aerarium } {
   const fundamentum = creaFundamentum(config)
-  const interior = optiones.paranoicus ? new Diarium(fundamentum) : fundamentum
+  const iterans = config.conatus > 0 ? new OraculumIterans(fundamentum, config.conatus) : fundamentum
+  const interior = optiones.paranoicus ? new Diarium(iterans) : iterans
   const aerarium = new Aerarium(interior, config.aerarium)
-  return { oraculum: aerarium, aerarium }
+  const oraculum = config.memor ? new OraculumMemor(aerarium, config.fasciculusMemoriae) : aerarium
+  return { oraculum, aerarium }
 }
 
 function creaFundamentum(config: Configuratio): Oraculum {

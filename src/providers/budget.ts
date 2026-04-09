@@ -49,3 +49,24 @@ export class Diarium implements Oraculum {
     return responsum
   }
 }
+
+export class OraculumIterans implements Oraculum {
+  constructor(
+    private readonly interior: Oraculum,
+    private readonly conatus: number,
+  ) {}
+
+  async divina(rogatio: Rogatio): Promise<Responsum> {
+    let ultimum: Responsum = { ratum: false, causa: "ERROR_ORACULI" }
+    for (let i = 0; i <= this.conatus; i++) {
+      try {
+        const responsum = await this.interior.divina(rogatio)
+        if (responsum.ratum || responsum.causa === "RECUSATIO") return responsum
+        ultimum = responsum
+      } catch (e) {
+        ultimum = { ratum: false, causa: "ERROR_ORACULI" }
+      }
+    }
+    return ultimum
+  }
+}

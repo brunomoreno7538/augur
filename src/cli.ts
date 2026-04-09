@@ -8,6 +8,9 @@ export interface OptionesMandati {
   exemplar: string | undefined
   temperatura: number | undefined
   aerarium: number | undefined
+  memor: boolean
+  fasciculusMemoriae: string | undefined
+  conatus: number | undefined
 }
 
 export function legeMandata(argv: string[]): OptionesMandati {
@@ -22,6 +25,9 @@ export function legeMandata(argv: string[]): OptionesMandati {
     .option("--model <id>", "model id")
     .option("--temperature <n>", "default temperature", legeFractionem)
     .option("--budget <n>", "AI call ceiling", legeInteger)
+    .option("--remember", "cache divinations to disk for reproducible, cheaper runs", false)
+    .option("--remember-file <path>", "cache file path (default .augur-cache.json)")
+    .option("--retry <n>", "retries on a transient oracle error", legeInteger)
     .allowExcessArguments(false)
 
   program.parse(argv, { from: "user" })
@@ -32,6 +38,9 @@ export function legeMandata(argv: string[]): OptionesMandati {
     model?: string
     temperature?: number
     budget?: number
+    remember?: boolean
+    rememberFile?: string
+    retry?: number
   }>()
 
   return {
@@ -42,6 +51,9 @@ export function legeMandata(argv: string[]): OptionesMandati {
     exemplar: opts.model,
     temperatura: opts.temperature,
     aerarium: opts.budget,
+    memor: opts.remember ?? false,
+    fasciculusMemoriae: opts.rememberFile,
+    conatus: opts.retry,
   }
 }
 
