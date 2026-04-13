@@ -101,6 +101,8 @@ chaos 0.9 { proclaim 2 + 2 } // who knows
 
 **Divination primitive**: `divine "instruction"` and `divine "instruction" upon expr`.
 
+**Typed coercion**: `expr as <type>` — `number`, `text`, `bool`, `list`, `map`, `[T]`, or `{field: T, …}`. Coerced natively when possible (`"42" as number`), divined when not (`"twelve dozen" as number`), and an oracle value inside `certain` if impossible. This is what makes divined output safe to use: `divine "the user" as {name: text, age: number}`.
+
 **I/O**: `ask`, `proclaim`, `whisper`, `read`, `write … to …`.
 
 **Database** (`vibes://…`): `commune with`, `inscribe … into`, `recall … from`, `revise … with`, `banish … from`, `query`. Outside `certain` the database is a growing text journal re-fed to the oracle on every read — so persistence is fiction, reads can disagree, and when the journal overflows the context budget **the oldest records are forgotten** (amnesia is a feature). Inside `certain`, it uses a real `bun:sqlite` engine and data persists.

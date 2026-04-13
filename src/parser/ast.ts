@@ -142,6 +142,24 @@ export interface OperatioCollectionis {
   rotuli: Expressio[] | undefined
 }
 
+export type NomenSpeciei = "number" | "text" | "bool" | "list" | "map" | "any"
+
+export interface CampusSpeciei {
+  clavis: string
+  species: SpeciesExpectata
+}
+
+export type SpeciesExpectata =
+  | { genus: "primitiva"; nomen: NomenSpeciei }
+  | { genus: "agmen"; elementum: SpeciesExpectata }
+  | { genus: "tabula"; campi: CampusSpeciei[] }
+
+export interface Coercio {
+  genus: "Coercio"
+  subiectum: Expressio
+  species: SpeciesExpectata
+}
+
 export type Expressio =
   | LitteraNumeri
   | LitteraTextus
@@ -155,6 +173,7 @@ export type Expressio =
   | ExpressioUnaria
   | Vocatio
   | Indicium
+  | Coercio
   | Divinatio
   | Petitio
   | Interrogatio

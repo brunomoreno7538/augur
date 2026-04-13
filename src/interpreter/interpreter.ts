@@ -9,6 +9,7 @@ import { OraculumFictum } from "../providers/fake"
 import type { Oraculum, Rogatio, SummariumOperandi } from "../providers/types"
 import { coerce, summa } from "./coercio"
 import { Ambitus } from "./environment"
+import { coerceNativa, speciesDescriptio } from "./species"
 import { PilaZonarum, temperaturaPro, type Zona } from "./zones"
 import {
   creaAgmen,
@@ -357,6 +358,8 @@ export class Aestimator {
         return await this.aestimaVocationem(e, amb)
       case "Indicium":
         return await this.aestimaIndicium(e, amb)
+      case "Coercio":
+        return await this.aestimaCoercionem(e, amb)
       case "Divinatio":
         return await this.aestimaDivinationem(e, amb)
       case "OperatioCollectionis":
@@ -486,6 +489,36 @@ export class Aestimator {
       return basis.tabula.get(index.textus) ?? NIHIL
     }
     throw new ErratumExsecutionis(`cannot index ${basis.genus} with ${index.genus}`)
+  }
+
+  private async aestimaCoercionem(
+    e: Extract<Expressio, { genus: "Coercio" }>,
+    amb: Ambitus,
+  ): Promise<Valor> {
+    const valor = await this.aestima(e.subiectum, amb)
+    if (estOraculum(valor)) return valor
+
+    const nativa = coerceNativa(valor, e.species)
+    if (nativa !== null) return nativa
+
+    const descriptio = speciesDescriptio(e.species)
+    const zona = this.pila.apex()
+    if (zona.genus === "Certus") {
+      return fingeOraculum("GENUS_DISCORS", `cannot coerce ${valor.genus} to ${descriptio}`)
+    }
+
+    const rogatio: Rogatio = {
+      genusOperationis: "coerce",
+      operandi: [summa(valor)],
+      instructio: `Convert this value to ${descriptio}`,
+      temperatura: temperaturaPro(zona, this.temperaturaDivina),
+      genusExpectatum: descriptio,
+      contextus: this.contextusCurrens,
+    }
+    const responsum = await this.oraculum.divina(rogatio)
+    if (!responsum.ratum) return fingeOraculum(responsum.causa)
+    const divinatum = coerce(responsum.valor)
+    return coerceNativa(divinatum, e.species) ?? divinatum
   }
 }
 

@@ -332,6 +332,34 @@ summon capital = divine "the capital city" upon "France"
 `divine "…"` produces a fresh value from the instruction alone;
 `divine "…" upon expr` divines *about* `expr`.
 
+### Typed coercion (`as`)
+
+`expr as <type>` coerces a value to a requested shape — the bridge that makes
+divined output safe to consume. Coercion is **native** when it can be (no oracle
+call), **divined** when it can't, and an **oracle value** inside `certain` when
+it's impossible.
+
+| Type | Meaning |
+|---|---|
+| `number` | a number (`"42" as number` → `42`) |
+| `text` | text (anything stringifies) |
+| `bool` | `yes`/`no` (by truthiness) |
+| `list` / `map` | an untyped list / map |
+| `[T]` | a list whose elements are each coerced to `T` |
+| `{field: T, …}` | a map validated field-by-field |
+
+```aug
+summon age   = ask "your age?" as number          // text input → number
+summon user  = divine "a fake user" as {name: text, age: number}
+summon scores = divine "five test scores" as [number]
+
+certain { proclaim "hello" as number }            // impossible → <oracle: …>
+```
+
+> **Note** — native coercions never call the oracle, so `"42" as number` is free
+> and deterministic. Only genuinely fuzzy conversions (`"a dozen" as number`)
+> reach the AI.
+
 ### Assertions
 
 `believe` asserts a condition. The condition is evaluated and judged for truth

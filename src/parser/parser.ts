@@ -2,13 +2,16 @@ import { ErratumGrammaticae } from "../errors"
 import { tessellare } from "../lexer/lexer"
 import type { GenusTesserae, Tessera } from "../lexer/tokens"
 import type {
+  CampusSpeciei,
   ClavisPraecepti,
   Expressio,
+  NomenSpeciei,
   OperatioCollectionisGenus,
   OperatorBinarius,
   ParTabulae,
   RamusConditionis,
   Sententia,
+  SpeciesExpectata,
 } from "./ast"
 
 const FINIS_FICTUS: Tessera = { genus: "EOF", lexema: "", linea: -1, columna: -1 }
@@ -414,9 +417,77 @@ export class Grammaticus {
         const index = this.legeExpressionem()
         this.expecta("RBRACKET", "']'")
         basis = { genus: "Indicium", basis, index }
+      } else if (this.inspice("AS")) {
+        this.progredere()
+        basis = { genus: "Coercio", subiectum: basis, species: this.legeSpeciem() }
       } else {
         return basis
       }
+    }
+  }
+
+  private legeSpeciem(): SpeciesExpectata {
+    if (this.inspice("LBRACKET")) {
+      this.progredere()
+      const elementum = this.legeSpeciem()
+      this.expecta("RBRACKET", "']'")
+      return { genus: "agmen", elementum }
+    }
+    if (this.inspice("LBRACE")) {
+      this.progredere()
+      const campi: CampusSpeciei[] = []
+      if (!this.inspice("RBRACE")) {
+        campi.push(this.legeCampumSpeciei())
+        while (this.inspice("COMMA")) {
+          this.progredere()
+          campi.push(this.legeCampumSpeciei())
+        }
+      }
+      this.expecta("RBRACE", "'}'")
+      return { genus: "tabula", campi }
+    }
+    const nomen = this.expecta("IDENT", "a type name").lexema
+    return { genus: "primitiva", nomen: this.normaSpeciei(nomen) }
+  }
+
+  private legeCampumSpeciei(): CampusSpeciei {
+    const t = this.hic()
+    let clavis: string
+    if (t.genus === "IDENT" || t.genus === "STRING") {
+      clavis = this.progredere().lexema
+    } else {
+      throw this.erratum("a field name")
+    }
+    this.expecta("COLON", "':'")
+    return { clavis, species: this.legeSpeciem() }
+  }
+
+  private normaSpeciei(nomen: string): NomenSpeciei {
+    switch (nomen) {
+      case "number":
+      case "num":
+      case "int":
+      case "float":
+        return "number"
+      case "text":
+      case "string":
+      case "str":
+        return "text"
+      case "bool":
+      case "boolean":
+      case "truth":
+        return "bool"
+      case "list":
+      case "array":
+        return "list"
+      case "map":
+      case "object":
+      case "obj":
+        return "map"
+      case "any":
+        return "any"
+      default:
+        throw this.erratum(`a type name (got '${nomen}')`)
     }
   }
 
