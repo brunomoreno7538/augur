@@ -604,7 +604,12 @@ export class Grammaticus {
       this.progredere()
       supra = this.legeExpressionem()
     }
-    return { genus: "Divinatio", instructio, supra }
+    let consensus = 1
+    if (this.inspice("THRICE")) {
+      this.progredere()
+      consensus = 3
+    }
+    return { genus: "Divinatio", instructio, supra, consensus }
   }
 
   private legePetitionem(): Expressio {

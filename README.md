@@ -101,7 +101,7 @@ chaos 0.9 { proclaim 2 + 2 } // who knows
 
 **Parallelism**: `gather [a, b, c]` evaluates the expressions concurrently; `gather map xs with "…"` (also `filter`/`classify`) runs the per-element divinations in parallel. Same results and order, far faster when you have many independent oracle calls.
 
-**Divination primitive**: `divine "instruction"` and `divine "instruction" upon expr`.
+**Divination primitive**: `divine "instruction"` and `divine "instruction" upon expr`. Add `thrice` to consult the oracle three times in parallel and take the majority — cheap self-consistency: `divine "the sentiment" upon review thrice`.
 
 **Typed coercion**: `expr as <type>` — `number`, `text`, `bool`, `list`, `map`, `[T]`, or `{field: T, …}`. Coerced natively when possible (`"42" as number`), divined when not (`"twelve dozen" as number`), and an oracle value inside `certain` if impossible. This is what makes divined output safe to use: `divine "the user" as {name: text, age: number}`.
 

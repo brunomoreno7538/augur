@@ -430,9 +430,36 @@ export class Aestimator {
       temperatura: temperaturaPro(zona, this.temperaturaDivina),
       contextus: this.contextusCurrens,
     }
+    if (e.consensus > 1) return await this.divinaConsensu(rogatio, e.consensus)
     const responsum = await this.oraculum.divina(rogatio)
     if (!responsum.ratum) return fingeOraculum(responsum.causa)
     return coerce(responsum.valor)
+  }
+
+  private async divinaConsensu(rogatio: Rogatio, numerus: number): Promise<Valor> {
+    const responsa = await Promise.all(Array.from({ length: numerus }, () => this.oraculum.divina(rogatio)))
+    const valida: Valor[] = []
+    for (const r of responsa) if (r.ratum) valida.push(coerce(r.valor))
+    if (valida.length === 0) {
+      for (const r of responsa) if (!r.ratum) return fingeOraculum(r.causa)
+      return fingeOraculum("RECUSATIO")
+    }
+    const conta = new Map<string, { valor: Valor; numerus: number }>()
+    for (const v of valida) {
+      const clavis = repraesenta(v)
+      const inventum = conta.get(clavis)
+      if (inventum) inventum.numerus += 1
+      else conta.set(clavis, { valor: v, numerus: 1 })
+    }
+    let optimum = valida[0]!
+    let maximus = 0
+    for (const { valor, numerus: n } of conta.values()) {
+      if (n > maximus) {
+        maximus = n
+        optimum = valor
+      }
+    }
+    return optimum
   }
 
   private async aestimaVocationem(

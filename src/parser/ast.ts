@@ -105,6 +105,7 @@ export interface Divinatio {
   genus: "Divinatio"
   instructio: string
   supra: Expressio | undefined
+  consensus: number
 }
 
 export interface Petitio {

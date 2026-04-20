@@ -332,6 +332,18 @@ summon capital = divine "the capital city" upon "France"
 `divine "…"` produces a fresh value from the instruction alone;
 `divine "…" upon expr` divines *about* `expr`.
 
+Add **`thrice`** to run the divination three times in parallel and return the
+**majority** answer — a cheap self-consistency check that cuts down on one-off
+hallucinations. It pairs with `upon` and `as`:
+
+```aug
+summon mood = divine "the overall sentiment" upon review thrice as text
+```
+
+> **Note** — `thrice` costs three oracle calls (and counts three against your
+> budget). Use it where reliability matters more than spend — classification,
+> extraction, anything you'd otherwise eyeball twice.
+
 ### Typed coercion (`as`)
 
 `expr as <type>` coerces a value to a requested shape — the bridge that makes

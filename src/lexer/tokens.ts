@@ -41,6 +41,7 @@ export type GenusTesserae =
   | "NAUGHT"
   | "DIVINE"
   | "UPON"
+  | "THRICE"
   | "GATHER"
   | "FETCH"
   | "ASK"
@@ -133,6 +134,7 @@ export const VERBA_RESERVATA: Readonly<Record<string, GenusTesserae>> = {
   naught: "NAUGHT",
   divine: "DIVINE",
   upon: "UPON",
+  thrice: "THRICE",
   gather: "GATHER",
   fetch: "FETCH",
   ask: "ASK",
