@@ -127,6 +127,7 @@ The implementation identifiers are written in Latin (the project's theme — *au
 
 ## Examples
 
+- `examples/triage.aug` — a support-desk triager: parallel `classify`/`filter`, typed extraction (`as`), `thrice`, and per-ticket replies (the genuinely-useful side, end to end).
 - `examples/guess.aug` — number-guessing game (`repeat forever`, `ask`, `when`/`otherwise`).
 - `examples/semantic_etl.aug` — semantic `map`/`extract`/`filter`/`sort` (the genuinely useful part).
 - `examples/http_mock.aug` — hallucinated `fetch` vs. a real one inside `certain`.
