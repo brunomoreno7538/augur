@@ -61,6 +61,7 @@ export type GenusTesserae =
   | "UNIQUE"
   | "PROCLAIM"
   | "WHISPER"
+  | "SERVE"
   | "READ"
   | "WRITE"
   | "TO"
@@ -155,6 +156,7 @@ export const VERBA_RESERVATA: Readonly<Record<string, GenusTesserae>> = {
   unique: "UNIQUE",
   proclaim: "PROCLAIM",
   whisper: "WHISPER",
+  serve: "SERVE",
   read: "READ",
   write: "WRITE",
   to: "TO",

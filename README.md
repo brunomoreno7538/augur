@@ -111,6 +111,24 @@ chaos 0.9 { proclaim 2 + 2 } // who knows
 
 **I/O**: `ask`, `proclaim`, `whisper`, `read`, `write … to …`.
 
+**HTTP server**: `serve <port> with <ritual>` runs a REST API. The handler gets a request map `{method, path, query, headers, body, json}` (`json` is the parsed body) and returns `{status, body, headers?}` — `body` as text stays text, a map/list becomes JSON. Routes can be deterministic (`certain` + the database) or divined. A real persistent CRUD lives in `examples/crud_api.aug`:
+
+```
+ritual handle(req) {
+    certain {
+        commune with "sqlite://./notes.db"
+        when req["method"] == "POST" and req["path"] == "/notes" -> {
+            inscribe req["json"] into notes
+            give {status: 201, body: {created: req["json"]}}
+        }
+        when req["method"] == "GET" and req["path"] == "/notes" -> give {status: 200, body: recall "all" from notes}
+    }
+    when req["path"] == "/fortune" -> give {status: 200, body: divine "a techie fortune cookie"}
+    give {status: 404, body: {error: "not found"}}
+}
+serve 8787 with handle
+```
+
 **Database** (`vibes://…`): `commune with`, `inscribe … into`, `recall … from`, `revise … with`, `banish … from`, `query`. Outside `certain` the database is a growing text journal re-fed to the oracle on every read — so persistence is fiction, reads can disagree, and when the journal overflows the context budget **the oldest records are forgotten** (amnesia is a feature). Inside `certain`, it uses a real `bun:sqlite` engine and data persists.
 
 **Context notes**: `/// note` lines are not discarded — they are injected into the AI prompt for the operations that follow.
@@ -127,6 +145,7 @@ The implementation identifiers are written in Latin (the project's theme — *au
 
 ## Examples
 
+- `examples/crud_api.aug` — a persistent REST CRUD over SQLite served with `serve`, plus a divined route.
 - `examples/triage.aug` — a support-desk triager: parallel `classify`/`filter`, typed extraction (`as`), `thrice`, and per-ticket replies (the genuinely-useful side, end to end).
 - `examples/guess.aug` — number-guessing game (`repeat forever`, `ask`, `when`/`otherwise`).
 - `examples/semantic_etl.aug` — semantic `map`/`extract`/`filter`/`sort` (the genuinely useful part).

@@ -322,6 +322,12 @@ export interface Scriptio {
   fasciculus: Expressio
 }
 
+export interface Servitio {
+  genus: "Servitio"
+  portus: Expressio
+  manipulator: Expressio
+}
+
 export interface SententiaExpressionis {
   genus: "SententiaExpressionis"
   expressio: Expressio
@@ -350,6 +356,7 @@ export type SententiaNuda =
   | Proclamatio
   | Susurrus
   | Scriptio
+  | Servitio
   | SententiaExpressionis
 
 export type Sententia = SententiaNuda & { contextus?: string[] }

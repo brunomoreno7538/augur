@@ -18,6 +18,7 @@ const FINIS_FICTUS: Tessera = { genus: "EOF", lexema: "", linea: -1, columna: -1
 
 export class Grammaticus {
   private index = 0
+  private inhibeAs = false
 
   constructor(private readonly tesserae: Tessera[]) {}
 
@@ -113,6 +114,8 @@ export class Grammaticus {
         return { genus: "Susurrus", expressio: this.legeExpressionem() }
       case "WRITE":
         return this.legeScriptionem()
+      case "SERVE":
+        return this.legeServitionem()
       case "IDENT":
         if (this.inspice("ASSIGN", 1)) return this.legeReassignationem()
         return { genus: "SententiaExpressionis", expressio: this.legeExpressionem() }
@@ -298,6 +301,14 @@ export class Grammaticus {
     return { genus: "Praeceptum", clavis, valor }
   }
 
+  private legeServitionem(): Sententia {
+    this.progredere()
+    const portus = this.legeExpressionem()
+    this.expecta("WITH", "'with'")
+    const manipulator = this.legeExpressionem()
+    return { genus: "Servitio", portus, manipulator }
+  }
+
   private legeScriptionem(): Sententia {
     this.progredere()
     const datum = this.legeExpressionem()
@@ -421,7 +432,7 @@ export class Grammaticus {
         const index = this.legeExpressionem()
         this.expecta("RBRACKET", "']'")
         basis = { genus: "Indicium", basis, index }
-      } else if (this.inspice("AS")) {
+      } else if (!this.inhibeAs && this.inspice("AS")) {
         this.progredere()
         basis = { genus: "Coercio", subiectum: basis, species: this.legeSpeciem() }
       } else {
@@ -606,7 +617,10 @@ export class Grammaticus {
     let supra: Expressio | undefined
     if (this.inspice("UPON")) {
       this.progredere()
+      const prior = this.inhibeAs
+      this.inhibeAs = true
       supra = this.legeExpressionem()
+      this.inhibeAs = prior
     }
     let consensus = 1
     if (this.inspice("THRICE")) {

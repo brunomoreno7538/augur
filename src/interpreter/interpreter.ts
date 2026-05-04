@@ -2,6 +2,7 @@ import { operatioCollectionis } from "../builtins/collections"
 import { Bancus } from "../builtins/db"
 import { affer } from "../builtins/http"
 import { lege, rogaConsola, scribe } from "../builtins/io"
+import { incipeServitorem } from "../builtins/servitor"
 import type { ContextusNativus } from "../builtins/types"
 import { AugurErratum, ErratumAerarii, ErratumExsecutionis, ErratumOraculi } from "../errors"
 import type { Expressio, OperatorBinarius, Programma, Sententia } from "../parser/ast"
@@ -184,6 +185,8 @@ export class Aestimator {
         scribe(datum, fasciculus)
         return
       }
+      case "Servitio":
+        return await this.exsequereServitionem(s, amb)
       case "Communio":
         this.bancus = new Bancus(s.locus, this.spatiumMemoriae)
         return
@@ -357,6 +360,18 @@ export class Aestimator {
     }
   }
 
+  private async exsequereServitionem(
+    s: Extract<Sententia, { genus: "Servitio" }>,
+    amb: Ambitus,
+  ): Promise<void> {
+    const portus = await this.aestima(s.portus, amb)
+    if (portus.genus !== "numerus") throw new ErratumExsecutionis("serve port must be a number")
+    const manipulator = await this.aestima(s.manipulator, amb)
+    if (manipulator.genus !== "ritus") throw new ErratumExsecutionis("serve handler must be a ritual")
+    const ritus = manipulator
+    await incipeServitorem(portus.numerus, (petitio) => this.furca().invocaRitum(ritus, [petitio]))
+  }
+
   private async aestima(e: Expressio, amb: Ambitus): Promise<Valor> {
     switch (e.genus) {
       case "LitteraNumeri":
@@ -523,13 +538,16 @@ export class Aestimator {
     }
     const argumenta: Valor[] = []
     for (const arg of e.argumenta) argumenta.push(await this.aestima(arg, amb))
+    return await this.invocaRitum(advocatus, argumenta)
+  }
 
-    if (advocatus.divinatus || advocatus.corpus === null) {
+  private async invocaRitum(ritus: ValorRitus, argumenta: Valor[]): Promise<Valor> {
+    if (ritus.divinatus || ritus.corpus === null) {
       const zona = this.pila.apex()
       const rogatio: Rogatio = {
-        genusOperationis: `ritual:${advocatus.nomen}`,
+        genusOperationis: `ritual:${ritus.nomen}`,
         operandi: argumenta.map(summa),
-        instructio: `invoke the ritual '${advocatus.nomen}'`,
+        instructio: `invoke the ritual '${ritus.nomen}'`,
         temperatura: temperaturaPro(zona, this.temperaturaDivina),
         contextus: this.contextusCurrens,
       }
@@ -537,15 +555,15 @@ export class Aestimator {
       if (!responsum.ratum) return fingeOraculum(responsum.causa)
       return coerce(responsum.valor)
     }
-    if (argumenta.length !== advocatus.parametri.length) {
+    if (argumenta.length !== ritus.parametri.length) {
       throw new ErratumExsecutionis(
-        `ritual '${advocatus.nomen}' expects ${advocatus.parametri.length} arguments, got ${argumenta.length}`,
+        `ritual '${ritus.nomen}' expects ${ritus.parametri.length} arguments, got ${argumenta.length}`,
       )
     }
-    const local = advocatus.clausura.filius()
-    advocatus.parametri.forEach((p, i) => local.declara(p, argumenta[i]!))
+    const local = ritus.clausura.filius()
+    ritus.parametri.forEach((p, i) => local.declara(p, argumenta[i]!))
     try {
-      await this.execCorpus(advocatus.corpus, local)
+      await this.execCorpus(ritus.corpus, local)
     } catch (err) {
       if (err instanceof SignumRedditionis) return err.valor
       throw err

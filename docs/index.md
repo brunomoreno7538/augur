@@ -542,6 +542,52 @@ certain {
 }
 ```
 
+### HTTP server (`serve`)
+
+`serve <port> with <ritual>` starts a REST server and keeps the process alive.
+The handler ritual is called once per request with a **request map** and returns
+a **response**.
+
+The request map:
+
+| Key | Value |
+|---|---|
+| `method` | `"GET"`, `"POST"`, … |
+| `path` | the URL path, e.g. `"/notes"` |
+| `query` | a map of query-string parameters |
+| `headers` | a map of request headers |
+| `body` | the raw request body (text) |
+| `json` | the body parsed as JSON (a map/list), or `naught` if it isn't JSON |
+
+The response: return `{status, body, headers?}`. A `body` that is text stays
+text; a map or list is serialized to JSON automatically. A bare value (not a
+map with `status`) becomes a `200`. An oracle value becomes a `500`.
+
+Each request runs on an isolated fork of the evaluator (so concurrent requests
+can't leak zones or `///` context into each other), but they **share the
+database connection**, so state persists across requests. Routes can be
+deterministic (`certain` + the database) or divined.
+
+```aug
+ritual handle(req) {
+  certain {
+    commune with "sqlite://./notes.db"
+    when req["method"] == "POST" and req["path"] == "/notes" -> {
+      inscribe req["json"] into notes
+      give {status: 201, body: {created: req["json"]}}
+    }
+    when req["method"] == "GET" and req["path"] == "/notes" -> give {status: 200, body: recall "all" from notes}
+  }
+  when req["path"] == "/fortune" -> give {status: 200, body: divine "a techie fortune cookie"}
+  give {status: 404, body: {error: "not found"}}
+}
+
+serve 8787 with handle
+```
+
+> **Note** — `serve` requires the Bun runtime (it uses `Bun.serve`); the
+> standalone compiled binary serves fine. See `examples/crud_api.aug`.
+
 ### The database
 
 A tiny database DSL. Connect once with `commune`, then read and write.
