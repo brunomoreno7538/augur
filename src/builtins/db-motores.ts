@@ -145,7 +145,7 @@ export function creaMotor(locus: string): MotorBasis {
       }
       return new MotorSql(locus, "mysql")
     default:
-      throw new Error(`unsupported database scheme "${schema}://"`)
+      return new MotorSqlite("")
   }
 }
 

@@ -641,17 +641,22 @@ proclaim divine "a haiku about determinism"
 ## CLI reference
 
 ```text
-aug <file.aug> [options]
+aug <file.aug | -> [options]      # - reads the program from stdin
 ```
 
 | Flag | Argument | Description |
 |---|---|---|
 | `--seance` | — | Start the interactive REPL instead of running a file. |
 | `--paranoid` | — | Log every oracle call (operation, temperature, operands, instruction, response, tokens) to stderr. |
+| `--quiet` | — | Suppress the end-of-run cost summary (keeps stdout clean for pipes). |
 | `--oracle <name>` | `anthropic` \| `openai` \| `openrouter` \| `ollama` \| `fake` | Override the provider. |
 | `--model <id>` | model id | Override the model. |
 | `--temperature <n>` | number | Override the default temperature. |
-| `--budget <n>` | integer | Override the oracle-call ceiling. |
+| `--budget <n>` | integer | Override the oracle-call ceiling (counts every real attempt, including retries). |
+| `--remember` | — | Cache divinations to disk for reproducible, cheaper re-runs. |
+| `--remember-file <path>` | path | Cache file path (default `.augur-cache.json`). |
+| `--retry <n>` | integer | Retries on a transient oracle error (default 2). |
+| `-v, --version` | — | Print the version. |
 | `--help` | — | Show usage. |
 
 When a run makes at least one oracle call, a cost summary is printed to stderr at
@@ -738,8 +743,12 @@ is the entire premise. For determinism, wrap the operation in `certain { }`,
 which uses real native computation.
 
 **Is caching on?**
-No. There is no result cache — every divined operation is a fresh oracle call,
-which is why the same expression can yield different values across runs.
+Off by default — every divined operation is a fresh oracle call, which is why the
+same expression can yield different values across runs. Pass `--remember` to
+memoize divinations to `.augur-cache.json` (a real result cache): re-running the
+same program then replays cached answers for reproducible, zero-token output.
+`thrice` still samples independently the first time (each vote is cached under its
+own key), so it stays a real majority vote while remaining replayable.
 
 **Does it cost money?**
 Only when you point at a paid provider (`anthropic`, `openai`, some `openrouter`

@@ -25,6 +25,7 @@ export interface Rogatio {
   genusExpectatum?: string
   contextus: string[]
   sineMemoria?: boolean
+  nonce?: number
 }
 
 export type Responsum =

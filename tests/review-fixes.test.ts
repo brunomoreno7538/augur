@@ -81,6 +81,42 @@ describe("retry does not swallow a budget error", () => {
   })
 })
 
+describe("read/write tolerate an oracle operand", () => {
+  it("propagates an oracle filename instead of crashing read", async () => {
+    const fail: Oraculum = { async divina() {
+      return { ratum: false, causa: "RECUSATIO" }
+    } }
+    const out = await curreCum('summon f = divine "x"\nproclaim read f', fail)
+    expect(out[0]).toContain("oracle")
+  })
+})
+
+describe("repeat uses an integer count", () => {
+  it("floors a non-integer repeat count", async () => {
+    const out = await curreCum("certain { summon n = 0  repeat 2.9 { n = n + 1 }  proclaim n }", new OraculumFictum())
+    expect(out).toEqual(["2"])
+  })
+})
+
+describe("cache collapses concurrent identical requests", () => {
+  it("calls the interior once for duplicate in-flight keys", async () => {
+    let n = 0
+    const interior: Oraculum = {
+      async divina() {
+        n += 1
+        await mora(10)
+        return { ratum: true, valor: n }
+      },
+    }
+    const file = join(mkdtempSync(join(tmpdir(), "aug-dd-")), "c.json")
+    const memor = new OraculumMemor(interior, file)
+    const [a, b, c] = await Promise.all([memor.divina(rog), memor.divina(rog), memor.divina(rog)])
+    expect(n).toBe(1)
+    expect(a).toEqual(b)
+    expect(b).toEqual(c)
+  })
+})
+
 describe("cache honours sineMemoria for independent samples", () => {
   it("does not memoize a request marked sineMemoria", async () => {
     let n = 0

@@ -174,9 +174,16 @@ export class Aestimator {
       case "SententiaExpressionis":
         await this.aestima(s.expressio, amb)
         return
-      case "Scriptio":
-        scribe(await this.aestima(s.datum, amb), await this.aestima(s.fasciculus, amb))
+      case "Scriptio": {
+        const datum = await this.aestima(s.datum, amb)
+        const fasciculus = await this.aestima(s.fasciculus, amb)
+        if (estOraculum(datum) || estOraculum(fasciculus)) {
+          this.scaena.susurra("write skipped: oracle operand")
+          return
+        }
+        scribe(datum, fasciculus)
         return
+      }
       case "Communio":
         this.bancus = new Bancus(s.locus, this.spatiumMemoriae)
         return
@@ -257,7 +264,7 @@ export class Aestimator {
     if (s.quotiens !== null) {
       const v = await this.aestima(s.quotiens, amb)
       if (v.genus !== "numerus") throw new ErratumExsecutionis("repeat count must be a number")
-      quotiens = v.numerus
+      quotiens = Math.floor(v.numerus)
     }
     for (let i = 0; i < quotiens; i++) {
       try {
@@ -410,8 +417,11 @@ export class Aestimator {
       }
       case "Interrogatio":
         return creaTextus(await this.roga(e.invitatio))
-      case "Lectio":
-        return lege(await this.aestima(e.fasciculus, amb))
+      case "Lectio": {
+        const fasciculus = await this.aestima(e.fasciculus, amb)
+        if (estOraculum(fasciculus)) return fasciculus
+        return lege(fasciculus)
+      }
       case "Consultatio":
         if (!this.bancus) return fingeOraculum("RECUSATIO", "no database; commune first")
         return await this.bancus.interroga(this.ctxNativus(), e.interrogatio)
@@ -475,8 +485,9 @@ export class Aestimator {
   }
 
   private async divinaConsensu(rogatio: Rogatio, numerus: number): Promise<Valor> {
-    const independens: Rogatio = { ...rogatio, sineMemoria: true }
-    const responsa = await Promise.all(Array.from({ length: numerus }, () => this.oraculum.divina(independens)))
+    const responsa = await Promise.all(
+      Array.from({ length: numerus }, (_, i) => this.oraculum.divina({ ...rogatio, nonce: i })),
+    )
     const valida: Valor[] = []
     for (const r of responsa) if (r.ratum) valida.push(coerce(r.valor))
     if (valida.length === 0) {

@@ -3,6 +3,7 @@ import type { Oraculum, Responsum, Rogatio, ValorCrudus } from "./types"
 
 export class OraculumMemor implements Oraculum {
   private readonly tabula = new Map<string, ValorCrudus>()
+  private readonly pendentia = new Map<string, Promise<Responsum>>()
 
   constructor(
     private readonly interior: Oraculum,
@@ -24,12 +25,21 @@ export class OraculumMemor implements Oraculum {
     const memoratum = this.tabula.get(clavis)
     if (memoratum !== undefined) return { ratum: true, valor: memoratum }
 
-    const responsum = await this.interior.divina(rogatio)
-    if (responsum.ratum) {
-      this.tabula.set(clavis, responsum.valor)
-      this.persiste()
+    const pendens = this.pendentia.get(clavis)
+    if (pendens) return await pendens
+
+    const promissum = this.interior.divina(rogatio)
+    this.pendentia.set(clavis, promissum)
+    try {
+      const responsum = await promissum
+      if (responsum.ratum) {
+        this.tabula.set(clavis, responsum.valor)
+        this.persiste()
+      }
+      return responsum
+    } finally {
+      this.pendentia.delete(clavis)
     }
-    return responsum
   }
 
   private clavis(r: Rogatio): string {
@@ -40,6 +50,7 @@ export class OraculumMemor implements Oraculum {
       r.genusExpectatum ?? null,
       r.contextus,
       r.temperatura,
+      r.nonce ?? null,
     ])
   }
 
