@@ -1,5 +1,9 @@
 # Augur
 
+<p align="center">
+  <img src="assets/augur.png" alt="An augur — the Roman priest who read omens from the flight of birds" width="240">
+</p>
+
 An interpreted programming language whose **operations are divined by an LLM instead of computed**. A meme premise with a serious architecture: the interpreter is 100% deterministic — only the *operations* descend to the AI.
 
 ```
