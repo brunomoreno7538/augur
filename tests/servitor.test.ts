@@ -36,19 +36,34 @@ describe("HTTP glue: response building", () => {
     expect(res.status).toBe(200)
   })
 
-  it("maps an oracle result to a 500", async () => {
-    const manip: Manipulator = async () => fingeOraculum("RECUSATIO", "nope")
+  it("maps an oracle result to a 500 with a generic body (no internal leak)", async () => {
+    const manip: Manipulator = async () => fingeOraculum("RECUSATIO", "secret internal detail")
     const res = await tractaPetitionem(manip, new Request("http://x/"))
     expect(res.status).toBe(500)
-    expect(await res.json()).toEqual({ error: "nope" })
+    expect(await res.json()).toEqual({ error: "internal error" })
   })
 
-  it("turns a thrown handler error into a 500", async () => {
+  it("maps an oracle BODY inside a response map to a 500", async () => {
+    const manip: Manipulator = async () =>
+      tabula({ status: creaNumerus(200), body: fingeOraculum("RECUSATIO", "x") })
+    const res = await tractaPetitionem(manip, new Request("http://x/"))
+    expect(res.status).toBe(500)
+  })
+
+  it("falls back to 200 on an out-of-range status instead of crashing", async () => {
+    const manip: Manipulator = async () => tabula({ status: creaNumerus(9999), body: creaTextus("ok") })
+    const res = await tractaPetitionem(manip, new Request("http://x/"))
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe("ok")
+  })
+
+  it("turns a thrown handler error into a generic 500", async () => {
     const manip: Manipulator = async () => {
       throw new Error("boom")
     }
     const res = await tractaPetitionem(manip, new Request("http://x/"))
     expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: "internal error" })
   })
 })
 

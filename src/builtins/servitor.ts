@@ -35,12 +35,11 @@ export async function construeReq(request: Request): Promise<Valor> {
 }
 
 export function construeResponsionem(v: Valor): Response {
-  if (estOraculum(v)) return responsioJson(500, { error: v.nuntius ?? "the oracle refused" })
+  if (estOraculum(v)) return responsioErroris(v.nuntius)
   if (v.genus === "tabula") {
-    const statusV = v.tabula.get("status")
-    const status = statusV && statusV.genus === "numerus" ? statusV.numerus : 200
     const corpus = v.tabula.get("body") ?? NIHIL
-    return construeCorpus(status, corpus, capitaEx(v.tabula.get("headers")))
+    if (estOraculum(corpus)) return responsioErroris(corpus.nuntius)
+    return construeCorpus(sanaStatus(v.tabula.get("status")), corpus, capitaEx(v.tabula.get("headers")))
   }
   return construeCorpus(200, v, {})
 }
@@ -51,7 +50,7 @@ export async function tractaPetitionem(manipulator: Manipulator, request: Reques
     const responsum = await manipulator(petitio)
     return construeResponsionem(responsum)
   } catch (e) {
-    return responsioJson(500, { error: e instanceof Error ? e.message : String(e) })
+    return responsioErroris(e instanceof Error ? e.message : String(e))
   }
 }
 
@@ -86,6 +85,18 @@ function capitaEx(v: Valor | undefined): Record<string, string> {
     for (const [clavis, valor] of v.tabula) if (valor.genus === "textus") capita[clavis] = valor.textus
   }
   return capita
+}
+
+function sanaStatus(v: Valor | undefined): number {
+  if (v && v.genus === "numerus" && Number.isInteger(v.numerus) && v.numerus >= 100 && v.numerus <= 599) {
+    return v.numerus
+  }
+  return 200
+}
+
+function responsioErroris(detail?: string): Response {
+  if (detail) console.error(`[augur serve] 500: ${detail}`)
+  return responsioJson(500, { error: "internal error" })
 }
 
 function responsioJson(status: number, datum: unknown): Response {

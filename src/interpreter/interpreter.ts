@@ -72,6 +72,7 @@ export class Aestimator {
   private pila = new PilaZonarum()
   private contextusCurrens: string[] = []
   private bancus: Bancus | null = null
+  private banci = new Map<string, Bancus>()
 
   constructor(optiones: OptionesAestimatoris = {}) {
     this.scaena = optiones.scaena ?? scaenaConsolae
@@ -101,7 +102,17 @@ export class Aestimator {
     filia.pila = this.pila.clona()
     filia.contextusCurrens = this.contextusCurrens
     filia.bancus = this.bancus
+    filia.banci = this.banci
     return filia
+  }
+
+  private obtineBancus(locus: string): Bancus {
+    let bancus = this.banci.get(locus)
+    if (!bancus) {
+      bancus = new Bancus(locus, this.spatiumMemoriae)
+      this.banci.set(locus, bancus)
+    }
+    return bancus
   }
 
   async curre(programma: Programma, ambitus: Ambitus = new Ambitus()): Promise<void> {
@@ -188,7 +199,7 @@ export class Aestimator {
       case "Servitio":
         return await this.exsequereServitionem(s, amb)
       case "Communio":
-        this.bancus = new Bancus(s.locus, this.spatiumMemoriae)
+        this.bancus = this.obtineBancus(s.locus)
         return
       case "Inscriptio":
         if (!this.bancus) return this.scaena.susurra("no database; commune first")

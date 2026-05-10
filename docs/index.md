@@ -563,10 +563,14 @@ The response: return `{status, body, headers?}`. A `body` that is text stays
 text; a map or list is serialized to JSON automatically. A bare value (not a
 map with `status`) becomes a `200`. An oracle value becomes a `500`.
 
-Each request runs on an isolated fork of the evaluator (so concurrent requests
-can't leak zones or `///` context into each other), but they **share the
-database connection**, so state persists across requests. Routes can be
-deterministic (`certain` + the database) or divined.
+Each request runs on an isolated fork of the evaluator, so concurrent requests
+can't leak **zones** or **`///` context** into each other. Module-scope state is
+**shared**, by design: top-level variables and database connections (pooled by
+connection string) persist across requests — that's what makes a CRUD work, and
+why an in-memory `sqlite://` store keeps its data between requests. Per-request
+locals (`summon` inside the handler) are isolated; treat top-level `change`/`forget`
+as shared mutable state. Routes can be deterministic (`certain` + the database)
+or divined.
 
 ```aug
 ritual handle(req) {
