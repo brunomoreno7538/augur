@@ -27,6 +27,8 @@ export type OperatioCollectionisGenus =
   | "sum"
   | "reverse"
   | "unique"
+  | "take"
+  | "skip"
 
 export type ClavisPraecepti = "oracle" | "model" | "temperature" | "budget"
 
@@ -141,6 +143,7 @@ export interface OperatioCollectionis {
   subiectum: Expressio
   criterium: string | undefined
   rotuli: Expressio[] | undefined
+  quantitas?: Expressio
 }
 
 export type NomenSpeciei = "number" | "text" | "bool" | "list" | "map" | "any"

@@ -21,6 +21,7 @@ export async function operatioCollectionis(
   subiectum: Valor,
   criterium: string | undefined,
   rotuli: Valor[] | undefined,
+  quantitas: Valor | undefined,
   parallelus = false,
 ): Promise<Valor> {
   switch (operatio) {
@@ -32,6 +33,10 @@ export async function operatioCollectionis(
       return inverte(subiectum)
     case "unique":
       return singularia(subiectum)
+    case "take":
+      return sumere(subiectum, quantitas)
+    case "skip":
+      return omittere(subiectum, quantitas)
     case "sort":
       return await ordina(ctx, subiectum, criterium)
     case "pick":
@@ -88,6 +93,25 @@ function singularia(v: Valor): Valor {
     if (!unica.some((u) => suntAequales(u, e))) unica.push(e)
   }
   return creaAgmen(unica)
+}
+
+function quantitasNumeri(quantitas: Valor | undefined): number | null {
+  if (!quantitas || quantitas.genus !== "numerus") return null
+  return Math.max(0, Math.floor(quantitas.numerus))
+}
+
+function sumere(v: Valor, quantitas: Valor | undefined): Valor {
+  if (v.genus !== "agmen") return fingeOraculum("GENUS_DISCORS", `cannot take from ${v.genus}`)
+  const n = quantitasNumeri(quantitas)
+  if (n === null) return fingeOraculum("GENUS_DISCORS", "take needs a number")
+  return creaAgmen(v.elementa.slice(0, n))
+}
+
+function omittere(v: Valor, quantitas: Valor | undefined): Valor {
+  if (v.genus !== "agmen") return fingeOraculum("GENUS_DISCORS", `cannot skip from ${v.genus}`)
+  const n = quantitasNumeri(quantitas)
+  if (n === null) return fingeOraculum("GENUS_DISCORS", "skip needs a number")
+  return creaAgmen(v.elementa.slice(n))
 }
 
 async function ordina(ctx: ContextusNativus, subiectum: Valor, criterium: string | undefined): Promise<Valor> {

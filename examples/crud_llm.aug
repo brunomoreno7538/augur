@@ -28,10 +28,18 @@ ritual handle(req) {
         give {status: 201, body: note}
     }
 
-    // SEARCH — the oracle lists the store, then filters it by the query
+    // SEARCH — the oracle lists the store, then keeps notes whose TEXT is
+    // relevant to the query q (semantic, case-insensitive, partial ok)
     when method == "GET" and path == "/notes/search" -> {
         summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
-        give {status: 200, body: divine "return only the notes matching the search query 'q'" upon {notes: all, q: req["query"]["q"]} as [{text: text, tags: [text]}]}
+        give {status: 200, body: divine "from these notes, return only the ones whose 'text' field is relevant to the search query 'q' — match by meaning and substring, case-insensitive" upon {notes: all, q: req["query"]["q"]} as [{text: text, tags: [text]}]}
+    }
+
+    // PAGE — logical pagination: the oracle lists the store, then take/skip
+    // slice it natively (deterministic, zero extra tokens).  ?limit=2&offset=0
+    when method == "GET" and path == "/notes/page" -> {
+        summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
+        give {status: 200, body: take (req["query"]["limit"] as number) from skip (req["query"]["offset"] as number) from all}
     }
 
     // LIST — the oracle reconstructs the whole store from its journal

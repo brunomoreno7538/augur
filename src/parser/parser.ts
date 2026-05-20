@@ -565,6 +565,8 @@ export class Grammaticus {
       case "SUM":
       case "REVERSE":
       case "UNIQUE":
+      case "TAKE":
+      case "SKIP":
         return this.legeOperationemCollectionis()
       default:
         throw this.erratum("an expression")
@@ -652,6 +654,13 @@ export class Grammaticus {
   private legeOperationemCollectionis(): Expressio {
     const t = this.progredere()
     const operatio = t.genus.toLowerCase() as OperatioCollectionisGenus
+
+    if (operatio === "take" || operatio === "skip") {
+      const quantitas = this.legeExpressionem()
+      this.expecta("FROM", "'from'")
+      const subiectum = this.legeExpressionem()
+      return { genus: "OperatioCollectionis", operatio, subiectum, criterium: undefined, rotuli: undefined, quantitas }
+    }
 
     if (operatio === "extract") {
       const criterium = this.expecta("STRING", "a 'what' string").lexema

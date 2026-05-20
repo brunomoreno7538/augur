@@ -468,7 +468,8 @@ export class Aestimator {
       rotuli = []
       for (const r of e.rotuli) rotuli.push(await this.aestima(r, amb))
     }
-    return await operatioCollectionis(this.ctxNativus(), e.operatio, subiectum, e.criterium, rotuli)
+    const quantitas = e.quantitas ? await this.aestima(e.quantitas, amb) : undefined
+    return await operatioCollectionis(this.ctxNativus(), e.operatio, subiectum, e.criterium, rotuli, quantitas)
   }
 
   private async divinaBinariam(op: OperatorBinarius, a: Valor, b: Valor): Promise<Valor> {
@@ -649,7 +650,8 @@ export class Aestimator {
         rotuli = []
         for (const r of sub.rotuli) rotuli.push(await this.aestima(r, amb))
       }
-      return await operatioCollectionis(this.ctxNativus(), sub.operatio, subiectum, sub.criterium, rotuli, true)
+      const quantitas = sub.quantitas ? await this.aestima(sub.quantitas, amb) : undefined
+      return await operatioCollectionis(this.ctxNativus(), sub.operatio, subiectum, sub.criterium, rotuli, quantitas, true)
     }
     return await this.aestima(sub, amb)
   }

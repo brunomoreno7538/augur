@@ -59,6 +59,8 @@ export type GenusTesserae =
   | "SUM"
   | "REVERSE"
   | "UNIQUE"
+  | "TAKE"
+  | "SKIP"
   | "PROCLAIM"
   | "WHISPER"
   | "SERVE"
@@ -154,6 +156,8 @@ export const VERBA_RESERVATA: Readonly<Record<string, GenusTesserae>> = {
   sum: "SUM",
   reverse: "REVERSE",
   unique: "UNIQUE",
+  take: "TAKE",
+  skip: "SKIP",
   proclaim: "PROCLAIM",
   whisper: "WHISPER",
   serve: "SERVE",

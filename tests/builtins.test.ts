@@ -38,6 +38,14 @@ describe("native collection ops", () => {
     expect(fictum.vocationes).toBe(0)
   })
 
+  it("takes and skips natively (logical pagination)", async () => {
+    const fictum = new OraculumFictum()
+    expect(await curreCum("proclaim take 2 from [1, 2, 3, 4]", fictum)).toEqual(["[1, 2]"])
+    expect(await curreCum("proclaim skip 2 from [1, 2, 3, 4]", fictum)).toEqual(["[3, 4]"])
+    expect(await curreCum("proclaim take 2 from skip 1 from [10, 20, 30, 40, 50]", fictum)).toEqual(["[20, 30]"])
+    expect(fictum.vocationes).toBe(0)
+  })
+
   it("sorts and picks natively inside certain", async () => {
     const fictum = new OraculumFictum()
     expect(await curreCum("certain { proclaim sort [3, 1, 2] }", fictum)).toEqual(["[1, 2, 3]"])
