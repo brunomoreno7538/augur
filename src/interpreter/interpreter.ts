@@ -209,10 +209,11 @@ export class Aestimator {
         if (!this.bancus) return this.scaena.susurra("no database; commune first")
         this.bancus.recense(await this.aestima(s.scopus, amb), s.instructio)
         return
-      case "Expulsio":
+      case "Expulsio": {
         if (!this.bancus) return this.scaena.susurra("no database; commune first")
-        this.bancus.expelle(s.descriptio, s.collectio)
+        this.bancus.expelle(repraesenta(await this.aestima(s.descriptio, amb)), s.collectio)
         return
+      }
     }
   }
 

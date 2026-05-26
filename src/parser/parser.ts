@@ -284,7 +284,7 @@ export class Grammaticus {
 
   private legeExpulsionem(): Sententia {
     this.progredere()
-    const descriptio = this.expecta("STRING", "a description string").lexema
+    const descriptio = this.legeExpressionem()
     this.expecta("FROM", "'from'")
     const collectio = this.expecta("IDENT", "a collection name").lexema
     return { genus: "Expulsio", descriptio, collectio }

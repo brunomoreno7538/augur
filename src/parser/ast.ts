@@ -305,7 +305,7 @@ export interface Recensio {
 
 export interface Expulsio {
   genus: "Expulsio"
-  descriptio: string
+  descriptio: Expressio
   collectio: string
 }
 

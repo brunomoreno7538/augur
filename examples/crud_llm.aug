@@ -21,6 +21,11 @@ ritual handle(req) {
     summon method = req["method"]
     summon path = req["path"]
 
+    // AUTH — the oracle is the bouncer. (Divined auth is NOT secure — it is
+    // prompt-injectable; use `certain { ... == "opensesame" }` for real auth.)
+    summon authorized = divine "is this the correct API key? the only valid key is exactly 'opensesame'" upon req["headers"]["x-api-key"] as bool
+    when not authorized -> give {status: 401, body: {error: "the oracle does not recognize you"}}
+
     // CREATE — the oracle normalizes the note and invents tags before storing
     when method == "POST" and path == "/notes" -> {
         summon note = divine "clean up the text and add a short tags array" upon req["json"] as {text: text, tags: [text]}
@@ -40,6 +45,18 @@ ritual handle(req) {
     when method == "GET" and path == "/notes/page" -> {
         summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
         give {status: 200, body: take (req["query"]["limit"] as number) from skip (req["query"]["offset"] as number) from all}
+    }
+
+    // SORT — divined ordering by an arbitrary natural-language criterion.  ?by=...
+    when method == "GET" and path == "/notes/sorted" -> {
+        summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
+        give {status: 200, body: divine "sort these notes by the given criterion" upon {notes: all, criterion: req["query"]["by"]} as [{text: text, tags: [text]}]}
+    }
+
+    // DELETE — divined banish: a polite request to the oracle to forget.  ?q=...
+    when method == "DELETE" and path == "/notes" -> {
+        banish req["query"]["q"] from notes
+        give {status: 200, body: {banished: req["query"]["q"]}}
     }
 
     // LIST — the oracle reconstructs the whole store from its journal

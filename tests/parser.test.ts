@@ -81,6 +81,7 @@ describe("statements", () => {
     expect(unaSententia("inscribe {a: 1} into xs").genus).toBe("Inscriptio")
     expect(unaSententia('revise y with "do it"').genus).toBe("Recensio")
     expect(unaSententia('banish "old ones" from xs').genus).toBe("Expulsio")
+    expect(unaSententia("banish req[\"query\"][\"q\"] from xs").genus).toBe("Expulsio")
   })
 })
 
