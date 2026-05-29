@@ -209,6 +209,11 @@ export interface Oblivio {
   nomen: string
 }
 
+export interface Inclusio {
+  genus: "Inclusio"
+  semita: string
+}
+
 export interface RamusConditionis {
   condicio: Expressio
   corpus: Sententia[]
@@ -340,6 +345,7 @@ export type SententiaNuda =
   | DeclaratioVar
   | Reassignatio
   | Oblivio
+  | Inclusio
   | Conditio
   | DumIteratio
   | Repetitio

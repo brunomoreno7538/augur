@@ -5,6 +5,7 @@ export type GenusTesserae =
   | "CONTEXT"
   | "EOF"
   | "SUMMON"
+  | "INCLUDE"
   | "FORGET"
   | "WHEN"
   | "OTHERWISE"
@@ -102,6 +103,7 @@ export interface Tessera {
 
 export const VERBA_RESERVATA: Readonly<Record<string, GenusTesserae>> = {
   summon: "SUMMON",
+  include: "INCLUDE",
   forget: "FORGET",
   when: "WHEN",
   otherwise: "OTHERWISE",

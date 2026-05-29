@@ -68,6 +68,9 @@ export class Grammaticus {
         return this.legeDeclarationem()
       case "FORGET":
         return this.legeOblivionem()
+      case "INCLUDE":
+        this.progredere()
+        return { genus: "Inclusio", semita: this.expecta("STRING", "a file path string").lexema }
       case "WHEN":
         return this.legeConditionem()
       case "WHILE":

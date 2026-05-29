@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs"
+import { resolve } from "node:path"
 import { operatioCollectionis } from "../builtins/collections"
 import { Bancus } from "../builtins/db"
 import { affer } from "../builtins/http"
@@ -6,6 +8,7 @@ import { incipeServitorem } from "../builtins/servitor"
 import type { ContextusNativus } from "../builtins/types"
 import { AugurErratum, ErratumAerarii, ErratumExsecutionis, ErratumOraculi } from "../errors"
 import type { Expressio, OperatorBinarius, Programma, Sententia } from "../parser/ast"
+import { analyza } from "../parser/parser"
 import { OraculumFictum } from "../providers/fake"
 import type { Oraculum, Rogatio, SummariumOperandi } from "../providers/types"
 import { coerce, estVerumCrudus, summa } from "./coercio"
@@ -73,6 +76,7 @@ export class Aestimator {
   private contextusCurrens: string[] = []
   private bancus: Bancus | null = null
   private banci = new Map<string, Bancus>()
+  private readonly inclusa = new Set<string>()
 
   constructor(optiones: OptionesAestimatoris = {}) {
     this.scaena = optiones.scaena ?? scaenaConsolae
@@ -142,6 +146,8 @@ export class Aestimator {
       case "Oblivio":
         amb.oblivisce(s.nomen)
         return
+      case "Inclusio":
+        return await this.exsequereInclusionem(s, amb)
       case "Conditio":
         return await this.exsequereConditionem(s, amb)
       case "DumIteratio":
@@ -215,6 +221,22 @@ export class Aestimator {
         return
       }
     }
+  }
+
+  private async exsequereInclusionem(
+    s: Extract<Sententia, { genus: "Inclusio" }>,
+    amb: Ambitus,
+  ): Promise<void> {
+    const semita = resolve(s.semita)
+    if (this.inclusa.has(semita)) return
+    this.inclusa.add(semita)
+    let fons: string
+    try {
+      fons = readFileSync(semita, "utf8")
+    } catch (e) {
+      throw new ErratumExsecutionis(`cannot include '${s.semita}': ${e instanceof Error ? e.message : String(e)}`)
+    }
+    for (const sententia of analyza(fons)) await this.exsequere(sententia, amb)
   }
 
   private async execCorpus(corpus: Sententia[], amb: Ambitus): Promise<void> {

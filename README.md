@@ -135,6 +135,8 @@ serve 8787 with handle
 
 **Database** (`vibes://…`): `commune with`, `inscribe … into`, `recall … from`, `revise … with`, `banish … from`, `query`. Outside `certain` the database is a growing text journal re-fed to the oracle on every read — so persistence is fiction, reads can disagree, and when the journal overflows the context budget **the oldest records are forgotten** (amnesia is a feature). Inside `certain`, it uses a real `bun:sqlite` engine and data persists.
 
+**Modules**: `include "lib/foo.aug"` runs another file's top-level definitions into the current scope (resolved from the working directory, included at most once) — split a big program across files.
+
 **Context notes**: `/// note` lines are not discarded — they are injected into the AI prompt for the operations that follow.
 
 ## Development

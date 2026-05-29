@@ -233,6 +233,19 @@ forget x          // remove from scope
 binding (walking outward through enclosing scopes); `forget` deletes it.
 Assigning or forgetting an undefined name is a runtime error.
 
+### Modules (`include`)
+
+`include "path/to/file.aug"` runs another file's top-level statements into the
+current scope, so its rituals and `summon`s become available — the way to split
+a program across files. Paths resolve from the working directory, and a given
+file is included at most once (re-including it is a no-op, so cycles are safe).
+
+```aug
+include "lib/hash.aug"        // defines ritual hash(...)
+include "lib/store.aug"       // defines ritual store()
+proclaim hash("hunter2")
+```
+
 ### Operators
 
 | Group | Operators |
