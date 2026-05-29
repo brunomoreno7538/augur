@@ -36,20 +36,20 @@ ritual handle(req) {
     // SEARCH — the oracle lists the store, then keeps notes whose TEXT is
     // relevant to the query q (semantic, case-insensitive, partial ok)
     when method == "GET" and path == "/notes/search" -> {
-        summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
+        summon all = query "every note still present — the ledger may contain BANISH entries; treat those as deleted and exclude them — as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
         give {status: 200, body: divine "from these notes, return only the ones whose 'text' field is relevant to the search query 'q' — match by meaning and substring, case-insensitive" upon {notes: all, q: req["query"]["q"]} as [{text: text, tags: [text]}]}
     }
 
     // PAGE — logical pagination: the oracle lists the store, then take/skip
     // slice it natively (deterministic, zero extra tokens).  ?limit=2&offset=0
     when method == "GET" and path == "/notes/page" -> {
-        summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
+        summon all = query "every note still present — the ledger may contain BANISH entries; treat those as deleted and exclude them — as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
         give {status: 200, body: take (req["query"]["limit"] as number) from skip (req["query"]["offset"] as number) from all}
     }
 
     // SORT — divined ordering by an arbitrary natural-language criterion.  ?by=...
     when method == "GET" and path == "/notes/sorted" -> {
-        summon all = query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
+        summon all = query "every note still present — the ledger may contain BANISH entries; treat those as deleted and exclude them — as a JSON array of {text, tags}" as [{text: text, tags: [text]}]
         give {status: 200, body: divine "sort these notes by the given criterion" upon {notes: all, criterion: req["query"]["by"]} as [{text: text, tags: [text]}]}
     }
 
@@ -61,7 +61,7 @@ ritual handle(req) {
 
     // LIST — the oracle reconstructs the whole store from its journal
     when method == "GET" and path == "/notes" ->
-        give {status: 200, body: query "every stored note as a JSON array of {text, tags}" as [{text: text, tags: [text]}]}
+        give {status: 200, body: query "every note still present — the ledger may contain BANISH entries; treat those as deleted and exclude them — as a JSON array of {text, tags}" as [{text: text, tags: [text]}]}
 
     give {status: 404, body: {error: "not found", path: path}}
 }
