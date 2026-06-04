@@ -151,6 +151,7 @@ The implementation identifiers are written in Latin (the project's theme - *augu
 
 ## Examples
 
+- `examples/calculator.aug` - a calculator in pure Augur: exact native math inside `certain`, plus a divined natural-language mode.
 - `examples/crud_api.aug` - a persistent REST CRUD over SQLite served with `serve`, plus a divined route.
 - `examples/triage.aug` - a support-desk triager: parallel `classify`/`filter`, typed extraction (`as`), `thrice`, and per-ticket replies (the genuinely-useful side, end to end).
 - `examples/guess.aug` - number-guessing game (`repeat forever`, `ask`, `when`/`otherwise`).
