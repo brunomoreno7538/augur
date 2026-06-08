@@ -1,6 +1,6 @@
 {
   "name": "augur",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "An interpreted language whose operations are divined by an LLM instead of computed",
   "type": "module",
   "license": "MIT",
