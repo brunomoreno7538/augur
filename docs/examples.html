@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examples · Augur docs</title>
+<meta name="description" content="Examples — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="active">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Examples</p>
+    <h1>Examples</h1>
+    
+<p class="lede">Every example runs offline with <code>--oracle fake</code>, or against a real oracle to let chaos in. Browse them in the <a href="https://github.com/bruneno/augur/tree/main/examples" target="_blank" rel="noopener">repository</a>.</p>
+<table><thead><tr><th>Program</th><th>What it shows</th></tr></thead><tbody><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/calculator.aug" target="_blank" rel="noopener">calculator.aug</a></td><td>A calculator in pure Augur: exact native math in <code>certain</code>, plus a divined natural-language mode.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/guess.aug" target="_blank" rel="noopener">guess.aug</a></td><td>Number-guessing game — <code>repeat forever</code>, <code>ask</code>, <code>when</code>/<code>otherwise</code>.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/semantic_etl.aug" target="_blank" rel="noopener">semantic_etl.aug</a></td><td>Semantic <code>map</code>/<code>extract</code>/<code>filter</code>/<code>sort</code> — the genuinely useful part.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/triage.aug" target="_blank" rel="noopener">triage.aug</a></td><td>Support-desk triager — <code>gather</code>, <code>thrice</code>, typed extraction.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/crud_api.aug" target="_blank" rel="noopener">crud_api.aug</a></td><td>A persistent REST CRUD over SQLite with <code>serve</code>, plus a divined route.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/crud_llm.aug" target="_blank" rel="noopener">crud_llm.aug</a></td><td>A fully-divined CRUD where every route hits the oracle.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/amnesiac_db.aug" target="_blank" rel="noopener">amnesiac_db.aug</a></td><td>The amnesiac database, the meme taken to its limit.</td></tr><tr><td><a href="https://github.com/bruneno/augur/blob/main/examples/http_mock.aug" target="_blank" rel="noopener">http_mock.aug</a></td><td>Hallucinated <code>fetch</code> vs. a real one inside <code>certain</code>.</td></tr></tbody></table>
+<p>There is also a separate <a href="https://github.com/bruneno/augur-auth-demo" target="_blank" rel="noopener">augur-auth-demo</a> — a user/password auth API written almost entirely in <code>divine</code>, backed by real MySQL. A joke about LLM software; do not deploy it.</p>
+    <div class="pager"><a href="architecture.html"><span class="dir">← Previous</span><span class="ttl">Architecture</span></a><span style="flex:1"></span></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

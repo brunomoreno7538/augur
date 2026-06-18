@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Providers · Augur docs</title>
+<meta name="description" content="Providers — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="active">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Tooling</p>
+    <h1>Providers</h1>
+    
+<table><thead><tr><th>Oracle</th><th>Default model</th><th>Auth / host</th></tr></thead><tbody><tr><td><code>anthropic</code></td><td><code>claude-haiku-4-5</code></td><td><code>ANTHROPIC_API_KEY</code></td></tr><tr><td><code>openai</code></td><td><code>gpt-4o-mini</code></td><td><code>OPENAI_API_KEY</code></td></tr><tr><td><code>openrouter</code></td><td><code>openai/gpt-4o-mini</code></td><td><code>OPENROUTER_API_KEY</code> — OpenAI-compatible; any vendor/model id via <code>--model</code>.</td></tr><tr><td><code>ollama</code></td><td><code>llama3.1</code></td><td>local, <code>OLLAMA_HOST</code> — runs 100% on your machine.</td></tr><tr><td><code>fake</code></td><td><em>(none)</em></td><td>Deterministic offline stub used by the test suite.</td></tr></tbody></table>
+<div class="note">API keys are read from the environment — never hardcoded. The end-of-run cost counter is in <strong>BRL</strong> (USD × 5.0), priced for <code>claude-haiku-4-5</code>, <code>gpt-4o-mini</code>, and <code>llama3.1</code>/<code>fake</code> (priced at 0). Other models — including most OpenRouter ids — read R$0; track real spend on your provider's dashboard.</div>
+<pre><code class="sh">bun run src/index.ts app.aug --oracle openrouter --model anthropic/claude-3.5-haiku
+ANTHROPIC_API_KEY=sk-... bun run src/index.ts app.aug --oracle anthropic</code></pre>
+    <div class="pager"><a href="configuration-cli.html"><span class="dir">← Previous</span><span class="ttl">Configuration & CLI</span></a><a class="next" href="architecture.html"><span class="dir">Next →</span><span class="ttl">Architecture</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

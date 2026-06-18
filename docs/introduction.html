@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction · Augur docs</title>
+<meta name="description" content="Introduction — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="active">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Getting Started</p>
+    <h1>Introduction</h1>
+    
+<p class="lede">Augur is a small, real programming language with one twist: the interpreter is 100% deterministic, but the <em>operations themselves</em> are divined by an LLM instead of computed.</p>
+<p>Lexer, parser, scope, control flow, and function calls are an ordinary, deterministic tree-walking evaluator. But the operations — arithmetic, comparison, collection transforms, even HTTP and the database — descend to an <strong>oracle</strong> (an LLM) that decides what the result should be. A meme premise on a serious architecture. <code>2 + 2</code> is whatever the oracle says it is — unless you wrap it in <code>certain { }</code>, where it is real, native, free, and always <code>4</code>.</p>
+<pre><code class="aug">oracle "anthropic"
+
+summon secret = divine "pick a random number from 1 to 100"
+summon guess  = ask "Your guess: "
+
+when guess == secret -&gt; proclaim "You got it!"
+otherwise            -&gt; proclaim "Try again."</code></pre>
+<h2>The premise</h2>
+<p>Every operation runs in one of three <strong>zones</strong> on a confidence gradient: <code>divine</code> (the default — through the AI), <code>chaos</code> (high temperature, anarchy), and <code>certain</code> (real, native, deterministic). The golden rule: control flow and scope are always deterministic; the oracle only decides whether each step's result is right, never what is computable.</p>
+<div class="note"><strong>It's a joke about LLM-driven software</strong> — do not deploy it. But the genuinely-useful 20% (semantic <code>filter</code>/<code>extract</code>/<code>classify</code>, typed coercion, vibe-tests) turns out to be handy.</div>
+<h2>Next</h2>
+<p>Head to <a href="installation.html">Installation</a> to get it running, then <a href="confidence-gradient.html">The Confidence Gradient</a> for the core idea.</p>
+    <div class="pager"><span style="flex:1"></span><a class="next" href="installation.html"><span class="dir">Next →</span><span class="ttl">Installation & Running</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

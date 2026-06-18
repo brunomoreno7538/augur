@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture · Augur docs</title>
+<meta name="description" content="Architecture — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="active">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Tooling</p>
+    <h1>Architecture</h1>
+    
+<p class="lede">Augur is four layers, with a hard wall between the deterministic core and the oracle.</p>
+<ol>
+<li><strong>Deterministic pipeline</strong> — <code>Lector</code> (lexer) → <code>Grammaticus</code> (parser → AST) → <code>Aestimator</code> (tree-walking evaluator). Scope, control flow, and ritual dispatch never consult the oracle.</li>
+<li><strong>Zone stack</strong> — <code>PilaZonarum</code> tracks the active zone per block, deciding whether each operation is divined, divined-hot, or computed natively.</li>
+<li><strong>Provider layer</strong> — every backend implements a single <code>Oraculum.divina()</code> interface. An <code>Aerarium</code> (budget) wrapper enforces the call ceiling and tallies tokens; a <code>Diarium</code> (paranoid log) traces each call. The <code>fake</code> oracle makes the whole suite run offline.</li>
+<li><strong>Native builtins</strong> — <code>Bancus</code> (database), <code>affer</code> (fetch), collection ops, and file/console I/O. These run real code in <code>certain</code> and delegate otherwise.</li>
+</ol>
+<div class="note">Implementation identifiers are written in <strong>Latin</strong> (the <em>augur</em> theme — a Roman priest who divined: <code>Lector</code>, <code>Grammaticus</code>, <code>Aestimator</code>, <code>Bancus</code>, <code>Oraculum</code>). The <code>.aug</code> keywords and all user-facing text are in <strong>English</strong>.</div>
+<p>The evaluator is async end-to-end (every operation can <code>await</code> the oracle), so <code>gather</code> and per-request <code>serve</code> forks are real concurrency. The test suite uses the <code>fake</code> oracle exclusively, so it is deterministic, free, and never touches the network.</p>
+    <div class="pager"><a href="providers.html"><span class="dir">← Previous</span><span class="ttl">Providers</span></a><a class="next" href="examples.html"><span class="dir">Next →</span><span class="ttl">Examples</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

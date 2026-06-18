@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typed Coercion (as) · Augur docs</title>
+<meta name="description" content="Typed Coercion (as) — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="active">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Language</p>
+    <h1>Typed Coercion (as)</h1>
+    
+<p class="lede"><code>expr as &lt;type&gt;</code> coerces a value to a requested shape — the bridge that makes divined output safe to consume. Coercion is <strong>native</strong> when it can be, <strong>divined</strong> when it can't, and an <strong>oracle value</strong> inside <code>certain</code> when it's impossible.</p>
+<table><thead><tr><th>Type</th><th>Meaning</th></tr></thead><tbody><tr><td><code>number</code></td><td>a number (<code>"42" as number</code> → <code>42</code>)</td></tr><tr><td><code>text</code></td><td>text (anything stringifies)</td></tr><tr><td><code>bool</code></td><td><code>yes</code>/<code>no</code> (by truthiness)</td></tr><tr><td><code>list</code> / <code>map</code></td><td>an untyped list / map</td></tr><tr><td><code>[T]</code></td><td>a list whose elements are each coerced to <code>T</code></td></tr><tr><td><code>{field: T, …}</code></td><td>a map validated field-by-field</td></tr></tbody></table>
+<pre><code class="aug">summon age    = ask "your age?" as number          // text input -&gt; number
+summon user   = divine "a fake user" as {name: text, age: number}
+summon scores = divine "five test scores" as [number]
+
+certain { proclaim "hello" as number }            // impossible -&gt; &lt;oracle: ...&gt;</code></pre>
+<div class="note">Native coercions never call the oracle, so <code>"42" as number</code> is free and deterministic. Only genuinely fuzzy conversions (<code>"a dozen" as number</code>) reach the AI. This is what makes divined output safe to use.</div>
+    <div class="pager"><a href="divination.html"><span class="dir">← Previous</span><span class="ttl">The divine Primitive</span></a><a class="next" href="collections.html"><span class="dir">Next →</span><span class="ttl">Semantic Collections</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

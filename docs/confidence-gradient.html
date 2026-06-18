@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Confidence Gradient · Augur docs</title>
+<meta name="description" content="The Confidence Gradient — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="active">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Language</p>
+    <h1>The Confidence Gradient</h1>
+    
+<p class="lede">Every operation runs in one of three zones. The zone is a runtime property of where the operation sits, decided at op-time by the nearest enclosing block.</p>
+<table><thead><tr><th>Zone</th><th>Keyword</th><th>Behaviour</th><th>Cost</th></tr></thead><tbody><tr><td><strong>Divine</strong></td><td><em>(default)</em></td><td>Through the oracle at the configured temperature. Plausible, usually correct.</td><td>yes</td></tr><tr><td><strong>Chaos</strong></td><td><code>chaos [N] { }</code></td><td>High temperature; anarchy. <code>2 + 2</code> may yield <code>"fish"</code>.</td><td>yes</td></tr><tr><td><strong>Certain</strong></td><td><code>certain { }</code></td><td>Real, deterministic, native computation. No oracle, no tokens.</td><td>free</td></tr></tbody></table>
+<div class="note"><strong>The golden rule.</strong> Control flow, scope, and ritual calls are <em>always</em> resolved by the deterministic evaluator. The oracle only decides <strong>whether each step's result is right</strong> — never <strong>what is computable</strong>. Loops still loop, branches still branch, scopes still nest, regardless of zone.</div>
+<p>It is maximalist on purpose: even <code>fetch</code> and the database are divinable. Outside <code>certain</code>, a <code>fetch</code> never hits the network — the oracle hallucinates a plausible response. Inside <code>certain</code>, it hits the real server.</p>
+<pre><code class="aug">proclaim 2 + 2                 // divined - usually 4, sometimes not
+certain { proclaim 2 + 2 }     // native - always 4
+chaos { proclaim 2 + 2 }       // high temperature - who knows</code></pre>
+<p>Zones nest; each block pushes onto a zone stack and pops on exit, so the active zone is always the innermost enclosing one. <code>chaos</code> with no number uses temperature <code>1.2</code>; <code>chaos 1.8</code> uses exactly that.</p>
+    <div class="pager"><a href="installation.html"><span class="dir">← Previous</span><span class="ttl">Installation & Running</span></a><a class="next" href="types.html"><span class="dir">Next →</span><span class="ttl">Values & Types</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variables &amp; Control Flow · Augur docs</title>
+<meta name="description" content="Variables &amp; Control Flow — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="active">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Language</p>
+    <h1>Variables & Control Flow</h1>
+    
+<h2>Variables</h2>
+<pre><code class="aug">summon x = 10     // declare
+x = 20            // reassign (must already exist)
+forget x          // remove from scope</code></pre>
+<p><code>summon</code> declares in the current scope; bare <code>name = expr</code> reassigns an existing binding (walking outward through enclosing scopes); <code>forget</code> deletes it. Assigning or forgetting an undefined name is a runtime error.</p>
+<h2>Conditionals</h2>
+<p>Use <code>when … -&gt;</code> with optional chained <code>when</code> branches and a final <code>otherwise</code>:</p>
+<pre><code class="aug">when score &gt; 90 -&gt; proclaim "A"
+when score &gt; 80 -&gt; proclaim "B"
+otherwise       -&gt; proclaim "C"</code></pre>
+<p>A branch body is either a single statement after <code>-&gt;</code> or a <code>{ }</code> block. If a condition divines to an oracle value it is treated as false (with a whisper).</p>
+<h2>Loops</h2>
+<pre><code class="aug">while x &gt; 0 { x = x - 1 }
+
+repeat 3 { proclaim "again" }
+repeat forever {
+  summon line = ask "&gt; "
+  when line == "stop" -&gt; break
+}
+
+for item in [1, 2, 3] { proclaim item }
+for key in {a: 1, b: 2} { proclaim key }   // a, b</code></pre>
+<p><code>for … in</code> iterates a list (or a map's keys). <code>break</code> and <code>continue</code> work in all three loop forms.</p>
+    <div class="pager"><a href="types.html"><span class="dir">← Previous</span><span class="ttl">Values & Types</span></a><a class="next" href="operators.html"><span class="dir">Next →</span><span class="ttl">Operators</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

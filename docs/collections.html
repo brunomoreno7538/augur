@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Collections · Augur docs</title>
+<meta name="description" content="Semantic Collections — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="active">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Language</p>
+    <h1>Semantic Collections</h1>
+    
+<p class="lede">Augur's most genuinely useful feature: collection operations whose criterion is <em>natural language</em>, resolved by the oracle.</p>
+<table><thead><tr><th>Operation</th><th>Syntax</th><th>Oracle?</th></tr></thead><tbody><tr><td><code>sort</code></td><td><code>sort xs [by "criterion"]</code></td><td>divined (native in <code>certain</code>)</td></tr><tr><td><code>filter</code></td><td><code>filter xs by "predicate"</code></td><td>divined</td></tr><tr><td><code>map</code></td><td><code>map xs with "transform"</code></td><td>divined</td></tr><tr><td><code>pick</code></td><td><code>pick xs [by "criterion"]</code></td><td>divined (first in <code>certain</code>)</td></tr><tr><td><code>classify</code></td><td><code>classify xs into ["a","b"]</code></td><td>divined</td></tr><tr><td><code>extract</code></td><td><code>extract "what" from x</code></td><td>divined</td></tr><tr><td><code>count</code></td><td><code>count x</code></td><td><strong>native</strong></td></tr><tr><td><code>sum</code></td><td><code>sum xs</code></td><td><strong>native</strong></td></tr><tr><td><code>reverse</code></td><td><code>reverse x</code></td><td><strong>native</strong></td></tr><tr><td><code>unique</code></td><td><code>unique xs</code></td><td><strong>native</strong></td></tr></tbody></table>
+<pre><code class="aug">summon names   = ["ana", "joão", "  MARIA ", "pedro"]
+summon cleaned = map names with "trim and title-case"
+summon emails  = extract "only valid emails" from "contact: ana@x.com, junk, j@y.org"
+summon urgent  = filter ["pay now", "hi", "URGENT: server down"] by "look urgent"
+proclaim sort cleaned by "alphabetical order"
+
+summon buckets = classify ["bug report", "thank you", "refund"] into ["complaint", "praise"]
+proclaim count [1, 2, 3]          // 3 (native)</code></pre>
+<div class="note">The four native ops never call the oracle. <code>filter</code>/<code>map</code>/<code>classify</code>/<code>extract</code> require the oracle and return an oracle value inside <code>certain</code>. <code>sort</code> and <code>pick</code> degrade gracefully in <code>certain</code>: a native comparison sort and the first element.</div>
+<h2>Parallelism (gather)</h2>
+<p>Element-wise collection ops call the oracle once per element, in order. For many independent calls that's slow — <code>gather</code> runs them concurrently instead, preserving input order.</p>
+<pre><code class="aug">summon facts = gather [
+  divine "the capital of France",
+  divine "the capital of Japan",
+  divine "the capital of Brazil",
+]
+
+summon translated = gather map articles with "translate to English"</code></pre>
+    <div class="pager"><a href="coercion.html"><span class="dir">← Previous</span><span class="ttl">Typed Coercion (as)</span></a><a class="next" href="errors.html"><span class="dir">Next →</span><span class="ttl">Assertions & Error Handling</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Values &amp; Types · Augur docs</title>
+<meta name="description" content="Values &amp; Types — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="active">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Language</p>
+    <h1>Values & Types</h1>
+    
+<p class="lede">Augur is vibe-typed — there are no type declarations, and any value can flow anywhere.</p>
+<table><thead><tr><th>Type</th><th>Literal</th><th>Notes</th></tr></thead><tbody><tr><td>number</td><td><code>42, 3.14</code></td><td>IEEE-754 doubles.</td></tr><tr><td>text</td><td><code>"hello"</code></td><td>Escapes: <code>\n \t \r \" \\</code>.</td></tr><tr><td>yes / no</td><td><code>yes, no</code></td><td>The boolean type.</td></tr><tr><td>list</td><td><code>[1, 2, 3]</code></td><td>Heterogeneous, zero-indexed.</td></tr><tr><td>map</td><td><code>{name: "Ana", age: 30}</code></td><td>Keys are identifiers or strings.</td></tr><tr><td>naught</td><td><code>naught</code></td><td>The absence of a value (null).</td></tr><tr><td><strong>oracle</strong></td><td><em>(not writable)</em></td><td>The poison value — see below.</td></tr><tr><td>ritual</td><td><em>(via <code>ritual</code>)</em></td><td>First-class function value.</td></tr></tbody></table>
+<p>Indexing reads from lists (by number) and maps (by text); out-of-range or missing keys yield <code>naught</code>:</p>
+<pre><code class="aug">summon xs = [10, 20, 30]
+proclaim xs[1]          // 20
+summon m = {city: "Rio"}
+proclaim m["city"]      // Rio
+proclaim m["nope"]      // naught</code></pre>
+<h2>The oracle poison value</h2>
+<p>When the oracle <strong>refuses</strong> an operation (it disagrees, returns malformed output, errors, or hits a type mismatch), the result is a special <strong>oracle</strong> value. It behaves like a <em>poison null</em>: any operation that touches it returns the oracle value unchanged, so a refusal propagates outward until something handles it. Booleanly it is false; iterating or calling it is a no-op (with a whisper to stderr). Catch it with <a href="errors.html"><code>attempt</code>/<code>rescue</code></a>.</p>
+<table><thead><tr><th>Refusal cause</th><th>Meaning</th></tr></thead><tbody><tr><td><code>RECUSATIO</code></td><td>The oracle declined the operation.</td></tr><tr><td><code>LECTIO_FALLAX</code></td><td>The oracle's response could not be read.</td></tr><tr><td><code>ERROR_ORACULI</code></td><td>The provider call itself errored.</td></tr><tr><td><code>GENUS_DISCORS</code></td><td>Type mismatch in a native operation.</td></tr></tbody></table>
+    <div class="pager"><a href="confidence-gradient.html"><span class="dir">← Previous</span><span class="ttl">The Confidence Gradient</span></a><a class="next" href="variables-control-flow.html"><span class="dir">Next →</span><span class="ttl">Variables & Control Flow</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

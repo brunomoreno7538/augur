@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuration &amp; CLI · Augur docs</title>
+<meta name="description" content="Configuration &amp; CLI — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="active">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Tooling</p>
+    <h1>Configuration & CLI</h1>
+    
+<h2>Configuration header</h2>
+<p>Configuration can be declared in a header at the top of a <code>.aug</code> file, read before the program runs.</p>
+<table><thead><tr><th>Header</th><th>Default</th><th>Effect</th></tr></thead><tbody><tr><td><code>oracle "name"</code></td><td><code>"fake"</code></td><td>Which provider to use.</td></tr><tr><td><code>model "id"</code></td><td>per-provider</td><td>The model id.</td></tr><tr><td><code>temperature N</code></td><td><code>0.7</code></td><td>Default divination temperature.</td></tr><tr><td><code>budget N</code></td><td><code>1000</code></td><td>Max oracle calls before aborting.</td></tr></tbody></table>
+<pre><code class="aug">oracle "anthropic"
+model "claude-haiku-4-5"
+temperature 0.4
+budget 200
+
+proclaim divine "a haiku about determinism"</code></pre>
+<div class="note">CLI flags <strong>override</strong> the file header, which overrides the built-in defaults.</div>
+<h2>CLI reference</h2>
+<pre><code class="sh">aug &lt;file.aug | -&gt; [options]      # - reads the program from stdin</code></pre>
+<table><thead><tr><th>Flag</th><th>Description</th></tr></thead><tbody><tr><td><code>--seance</code></td><td>Start the interactive REPL.</td></tr><tr><td><code>--paranoid</code></td><td>Log every oracle call (operation, operands, response, tokens) to stderr.</td></tr><tr><td><code>--quiet</code></td><td>Suppress the end-of-run cost summary.</td></tr><tr><td><code>--oracle &lt;name&gt;</code></td><td>anthropic | openai | openrouter | ollama | fake.</td></tr><tr><td><code>--model &lt;id&gt;</code></td><td>Override the model.</td></tr><tr><td><code>--temperature &lt;n&gt;</code></td><td>Override the default temperature.</td></tr><tr><td><code>--budget &lt;n&gt;</code></td><td>Override the oracle-call ceiling.</td></tr><tr><td><code>--remember</code></td><td>Cache divinations to disk for reproducible, cheaper re-runs.</td></tr><tr><td><code>--remember-file &lt;path&gt;</code></td><td>Cache file path (default <code>.augur-cache.json</code>).</td></tr><tr><td><code>--retry &lt;n&gt;</code></td><td>Retries on a transient oracle error (default 2).</td></tr><tr><td><code>-v, --version</code></td><td>Print the version.</td></tr></tbody></table>
+<p>When a run makes at least one oracle call, a cost summary is printed to stderr:</p>
+<pre><code class="sh">You spent R$0.0123 on 4 divination(s) - 512 in / 96 out tokens (claude-haiku-4-5).</code></pre>
+    <div class="pager"><a href="modules.html"><span class="dir">← Previous</span><span class="ttl">Modules & Context Notes</span></a><a class="next" href="providers.html"><span class="dir">Next →</span><span class="ttl">Providers</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

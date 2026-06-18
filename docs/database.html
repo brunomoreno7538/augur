@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Database · Augur docs</title>
+<meta name="description" content="The Database — the Augur language documentation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<header class="dheader">
+  <button class="burger" id="burger" aria-label="Toggle navigation">☰</button>
+  <a class="dbrand" href="introduction.html"><span class="mk">✦</span> Augur <span style="color:var(--muted);font-weight:400;font-size:.8rem">docs</span></a>
+  <div class="spacer"></div>
+  <div class="dsearch">
+    <input id="dsearch" type="search" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+    <div class="dsearch-results" id="dresults"></div>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="https://github.com/bruneno/augur" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+</header>
+<aside class="dside"><div class="group"><div class="group-label">Getting Started</div><a href="introduction.html" class="">Introduction</a><a href="installation.html" class="">Installation & Running</a></div><div class="group"><div class="group-label">Language</div><a href="confidence-gradient.html" class="">The Confidence Gradient</a><a href="types.html" class="">Values & Types</a><a href="variables-control-flow.html" class="">Variables & Control Flow</a><a href="operators.html" class="">Operators</a><a href="rituals.html" class="">Rituals (Functions)</a><a href="divination.html" class="">The divine Primitive</a><a href="coercion.html" class="">Typed Coercion (as)</a><a href="collections.html" class="">Semantic Collections</a><a href="errors.html" class="">Assertions & Error Handling</a></div><div class="group"><div class="group-label">Standard Library</div><a href="io.html" class="">Input & Output</a><a href="http.html" class="">HTTP: fetch & serve</a><a href="database.html" class="active">The Database</a><a href="modules.html" class="">Modules & Context Notes</a></div><div class="group"><div class="group-label">Tooling</div><a href="configuration-cli.html" class="">Configuration & CLI</a><a href="providers.html" class="">Providers</a><a href="architecture.html" class="">Architecture</a></div><div class="group"><div class="group-label">Examples</div><a href="examples.html" class="">Examples</a></div></aside>
+<div class="scrim"></div>
+<main class="dmain">
+  <article class="darticle">
+    <p class="eyebrow">Standard Library</p>
+    <h1>The Database</h1>
+    
+<p class="lede">A tiny database DSL. Connect once with <code>commune</code>, then read and write.</p>
+<table><thead><tr><th>Statement</th><th>Meaning</th></tr></thead><tbody><tr><td><code>commune with "url"</code></td><td>Open/attach a database at the connection string.</td></tr><tr><td><code>inscribe expr into name</code></td><td>Insert a value into a collection.</td></tr><tr><td><code>recall "description" from name</code></td><td>Read matching records from a collection.</td></tr><tr><td><code>revise target with "instruction"</code></td><td>Apply a natural-language edit.</td></tr><tr><td><code>banish "description" from name</code></td><td>Delete matching records.</td></tr><tr><td><code>query "question"</code></td><td>Ask a free-form question of the whole database.</td></tr></tbody></table>
+<pre><code class="aug">commune with "vibes://localhost/store"
+inscribe {name: "Ana", balance: 100} into clients
+inscribe {name: "Beto", balance: 50} into clients
+summon ana = recall "the client named Ana" from clients
+revise ana with "double her balance"
+proclaim query "who has the highest balance?"
+banish "clients with a balance under 60" from clients
+proclaim query "list all remaining clients"</code></pre>
+<h2>The amnesiac model (outside certain)</h2>
+<p>Outside <code>certain</code>, the database is <strong>not</strong> a store — it is a growing text <em>journal</em>. Every write appends a line; every read re-feeds the entire journal to the oracle. Consequences, all intentional:</p>
+<ul>
+<li>Persistence is fiction — there are no rows, only a remembered history.</li>
+<li>Two reads of the same thing can disagree.</li>
+<li>When the journal exceeds the context budget (<code>spatiumMemoriae</code>, ~4000 tokens), the <strong>oldest lines are forgotten</strong>. Amnesia is a feature.</li>
+</ul>
+<h2>The real engine (inside certain)</h2>
+<p>Inside <code>certain</code>, the database talks to a <strong>real engine</strong> chosen by the URL scheme. Data persists: <code>inscribe</code> does an <code>INSERT</code>, <code>recall</code> a <code>SELECT</code>. <code>revise</code>/<code>banish</code> are not supported in <code>certain</code> (the real store is append-only) and raise an explicit error.</p>
+<table><thead><tr><th>Connection string</th><th>Backing engine</th></tr></thead><tbody><tr><td><code>"sqlite://./data.db"</code></td><td>A real SQLite file (<code>bun:sqlite</code>).</td></tr><tr><td><code>"sqlite://"</code></td><td>An in-memory SQLite database.</td></tr><tr><td><code>"postgres://…"</code></td><td>PostgreSQL via Bun's built-in <code>Bun.SQL</code>.</td></tr><tr><td><code>"mysql://…"</code></td><td>MySQL / MariaDB via <code>Bun.SQL</code>.</td></tr><tr><td><code>"vibes://…"</code></td><td>Any other scheme → in-memory SQLite in <code>certain</code>.</td></tr></tbody></table>
+<div class="note">Postgres and MySQL use Bun's native SQL client, so the standalone binary needs no extra npm drivers. Collection names are validated and identifiers quoted, so the divined NL never reaches raw SQL.</div>
+    <div class="pager"><a href="http.html"><span class="dir">← Previous</span><span class="ttl">HTTP: fetch & serve</span></a><a class="next" href="modules.html"><span class="dir">Next →</span><span class="ttl">Modules & Context Notes</span></a></div>
+  </article>
+</main>
+<footer class="dfoot">
+  Augur — operations divined, not computed. <a href="https://github.com/bruneno/augur">Source</a> · A joke about LLM-driven software. Do not deploy it.
+</footer>
+<script src="search-index.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>
